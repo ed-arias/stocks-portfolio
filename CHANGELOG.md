@@ -17,6 +17,27 @@ Best practices:
 
 ## [Unreleased]
 
+### Changed
+- Moved all financial calculations (market value, unrealized gain, daily change, portfolio weight, total return) out of the frontend and into the backend service layer
+- `StockService` mock now returns fully pre-computed `StockPosition` and `PortfolioSummary` data with no runtime arithmetic
+- `App.tsx` render logic now reads pre-computed fields directly — no inline multiplication or division
+- Extended `StockPosition` type with six backend-owned fields: `marketValue`, `unrealizedGain`, `unrealizedGainPercentage`, `dailyChange`, `dailyChangePercentage`, `portfolioWeight`
+- Extended `PortfolioSummary` type with `totalReturn` and `totalReturnPercentage`
+- Updated `README.md` API contract to document all new pre-computed fields
+
+## [0.2.0] - 2026-02-28
+
+### Changed
+- Full UI redesign with Apple-inspired aesthetic (Figtree + JetBrains Mono fonts)
+- Replaced flat Vite template layout with sidebar + main content grid
+- Replaced generic button theme toggle with icon-based sun/moon SVG toggle
+- Redesigned summary cards with iOS-style pill badges for gain/loss indicators
+- Redesigned holdings table with tabular-nums, monospace data font, and company name sub-label
+- New Light theme: iOS system gray palette (`#F2F2F7`) with Apple blue accent (`#0071E3`)
+- New Dark theme: pure black (`#000000`) with layered surfaces and `#0A84FF` accent
+- Replaced plain text loading state with shimmer skeleton that preserves the layout shell
+- Added staggered `fadeUp` entrance animations on cards and table rows
+
 ## [0.1.0] - 2026-02-28
 
 ### Added

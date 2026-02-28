@@ -14,8 +14,8 @@ Features are grouped by epic and tagged with priority:
 
 | # | Feature | Priority | Inspired by |
 |---|---|---|---|
-| 1.1 | Total portfolio value card (current market value) | P0 | All |
-| 1.2 | Day gain/loss card (absolute + %) with color indicator | P0 | All |
+| 1.1 | Total portfolio value card (current market value) | ✅ Done | All |
+| 1.2 | Day gain/loss card (absolute + %) with color indicator | ✅ Done | All |
 | 1.3 | Total return card (all-time absolute + %) | P0 | Empower, Sharesight |
 | 1.4 | Portfolio value history line chart (1W / 1M / 3M / YTD / 1Y / All) | P0 | Yahoo Finance, Delta |
 | 1.5 | Asset allocation donut chart (stocks, ETFs, crypto, cash) | P1 | Empower, Morningstar |
@@ -32,11 +32,11 @@ Features are grouped by epic and tagged with priority:
 
 | # | Feature | Priority | Inspired by |
 |---|---|---|---|
-| 2.1 | Holdings list with ticker, shares, current price, market value | P0 | All |
-| 2.2 | Per-holding unrealized gain/loss (absolute + %) | P0 | All |
+| 2.1 | Holdings list with ticker, shares, current price, market value | ✅ Done | All |
+| 2.2 | Per-holding unrealized gain/loss (absolute + %) | ✅ Done | All |
 | 2.3 | Per-holding daily change (absolute + %) | P0 | All |
 | 2.4 | Per-holding portfolio weight (%) | P0 | Empower, Morningstar |
-| 2.5 | Per-holding average cost / cost basis | P0 | All |
+| 2.5 | Per-holding average cost / cost basis | ✅ Done | All |
 | 2.6 | Per-holding dividend yield | P1 | Sharesight, Stock Events, Parqet |
 | 2.7 | Per-holding total return including dividends | P1 | Sharesight |
 | 2.8 | Customizable columns (user selects visible metrics) | P1 | Seeking Alpha, Yahoo Finance |
@@ -208,7 +208,7 @@ Features are grouped by epic and tagged with priority:
 | # | Feature | Priority | Inspired by |
 |---|---|---|---|
 | 14.1 | Light / Dark theme toggle (already implemented) | ✅ Done | All |
-| 14.2 | Responsive layout (mobile + tablet + desktop) | P0 | All |
+| 14.2 | Responsive layout (mobile + tablet + desktop) | ✅ Done | All |
 | 14.3 | Keyboard navigation and accessibility (ARIA) | P1 | — |
 | 14.4 | Persistent user preferences (columns, theme, layout) | P1 | Yahoo Finance, Seeking Alpha |
 | 14.5 | Customizable dashboard layout (drag-and-drop cards) | P2 | Webull, Empower |

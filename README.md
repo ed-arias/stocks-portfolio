@@ -46,6 +46,8 @@ Returns the full portfolio overview.
   "totalValue": 27891.45,
   "dailyGain": 452.18,
   "dailyGainPercentage": 1.25,
+  "totalReturn": 5241.53,
+  "totalReturnPercentage": 23.14,
   "positions": [
     {
       "id": "1",
@@ -54,7 +56,13 @@ Returns the full portfolio overview.
       "shares": 10,
       "avgCost": 150.00,
       "currentPrice": 185.92,
-      "lastUpdate": "2026-02-28T12:00:00.000Z"
+      "lastUpdate": "2026-02-28T16:00:00.000Z",
+      "marketValue": 1859.20,
+      "unrealizedGain": 359.20,
+      "unrealizedGainPercentage": 23.95,
+      "dailyChange": 18.50,
+      "dailyChangePercentage": 1.00,
+      "portfolioWeight": 6.67
     }
   ]
 }
@@ -64,20 +72,29 @@ Returns the full portfolio overview.
 
 ```typescript
 interface PortfolioSummary {
-  totalValue: number;          // Total market value of all positions
-  dailyGain: number;           // Absolute daily gain/loss in USD
-  dailyGainPercentage: number; // Daily gain/loss as a percentage
+  totalValue: number;            // Total market value of all positions
+  dailyGain: number;             // Absolute daily gain/loss in USD
+  dailyGainPercentage: number;   // Daily gain/loss as a percentage
+  totalReturn: number;           // All-time absolute gain/loss in USD
+  totalReturnPercentage: number; // All-time return as a percentage
   positions: StockPosition[];
 }
 
 interface StockPosition {
   id: string;
-  ticker: string;              // Stock symbol (e.g. "AAPL")
+  ticker: string;                      // Stock symbol (e.g. "AAPL")
   companyName: string;
   shares: number;
-  avgCost: number;             // Average cost basis per share in USD
-  currentPrice: number;        // Latest market price per share in USD
-  lastUpdate: string;          // ISO 8601 timestamp
+  avgCost: number;                     // Average cost basis per share in USD
+  currentPrice: number;                // Latest market price per share in USD
+  lastUpdate: string;                  // ISO 8601 timestamp
+  // Pre-computed by backend
+  marketValue: number;                 // shares × currentPrice
+  unrealizedGain: number;              // marketValue − (shares × avgCost)
+  unrealizedGainPercentage: number;    // unrealizedGain / costBasis × 100
+  dailyChange: number;                 // Absolute $ change today for this position
+  dailyChangePercentage: number;       // % change today for this position
+  portfolioWeight: number;             // marketValue / totalPortfolioValue × 100
 }
 ```
 
