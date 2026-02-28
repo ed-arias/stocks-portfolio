@@ -17,6 +17,9 @@ Best practices:
 
 ## [Unreleased]
 
+### Added
+- Total Return summary card on the dashboard showing all-time absolute gain/loss (USD) and percentage with iOS-style pill badge
+
 ### Changed
 - Moved all financial calculations (market value, unrealized gain, daily change, portfolio weight, total return) out of the frontend and into the backend service layer
 - `StockService` mock now returns fully pre-computed `StockPosition` and `PortfolioSummary` data with no runtime arithmetic

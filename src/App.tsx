@@ -90,6 +90,7 @@ function App() {
   }
 
   const isPositive = (portfolio?.dailyGain ?? 0) >= 0
+  const isReturnPositive = (portfolio?.totalReturn ?? 0) >= 0
 
   return (
     <div className="shell">
@@ -114,6 +115,18 @@ function App() {
                 {portfolio ? formatCurrency(Math.abs(portfolio.dailyGain)) : '—'}
                 &nbsp;({portfolio?.dailyGainPercentage.toFixed(2)}%) today
               </span>
+            </p>
+          </div>
+
+          {/* Total Return */}
+          <div className="card">
+            <p className="card-label">Total Return</p>
+            <p className="card-value">
+              {portfolio ? formatCurrency(portfolio.totalReturn) : '—'}
+            </p>
+            <p className={`card-change ${isReturnPositive ? 'positive' : 'negative'}`}>
+              <span>{isReturnPositive ? '▲' : '▼'}</span>
+              <span>{portfolio?.totalReturnPercentage.toFixed(2)}% all-time</span>
             </p>
           </div>
 
