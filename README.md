@@ -32,6 +32,57 @@ npm run dev
 npm run build
 ```
 
+## Backend API Contract
+
+The frontend delegates all data fetching to `StockService`, which expects the following backend endpoints:
+
+### `GET /portfolio/summary`
+
+Returns the full portfolio overview.
+
+**Response**
+```json
+{
+  "totalValue": 27891.45,
+  "dailyGain": 452.18,
+  "dailyGainPercentage": 1.25,
+  "positions": [
+    {
+      "id": "1",
+      "ticker": "AAPL",
+      "companyName": "Apple Inc.",
+      "shares": 10,
+      "avgCost": 150.00,
+      "currentPrice": 185.92,
+      "lastUpdate": "2026-02-28T12:00:00.000Z"
+    }
+  ]
+}
+```
+
+**Types**
+
+```typescript
+interface PortfolioSummary {
+  totalValue: number;          // Total market value of all positions
+  dailyGain: number;           // Absolute daily gain/loss in USD
+  dailyGainPercentage: number; // Daily gain/loss as a percentage
+  positions: StockPosition[];
+}
+
+interface StockPosition {
+  id: string;
+  ticker: string;              // Stock symbol (e.g. "AAPL")
+  companyName: string;
+  shares: number;
+  avgCost: number;             // Average cost basis per share in USD
+  currentPrice: number;        // Latest market price per share in USD
+  lastUpdate: string;          // ISO 8601 timestamp
+}
+```
+
+> Currently running against mock data in `src/services/StockService.ts`. Swap the implementation to point at a real backend without any component changes.
+
 ## Project Structure
 
 ```
