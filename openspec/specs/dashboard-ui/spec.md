@@ -33,7 +33,7 @@ The sidebar SHALL display the application logotype in Figtree bold and a compact
 - **THEN** the sidebar collapses into a horizontal top bar with logotype left-aligned and toggle right-aligned
 
 ### Requirement: Summary cards present portfolio metrics with visual hierarchy
-The dashboard SHALL display at minimum a Total Portfolio Value card and a Daily Gain/Loss card. Card values (large numbers) SHALL use JetBrains Mono. Labels SHALL be visually subordinate using `--text-muted`. The gain/loss indicator SHALL render as an iOS-style pill badge — colored text on a tinted background using the success or danger token pair.
+The dashboard SHALL display at minimum a Total Portfolio Value card, a Daily Gain/Loss card, and a **Total Return card**. Card values (large numbers) SHALL use JetBrains Mono. Labels SHALL be visually subordinate using `--text-muted`. The gain/loss and total return indicators SHALL render as iOS-style pill badges — colored text on a tinted background using the success or danger token pair.
 
 #### Scenario: Positive daily gain renders as success pill
 - **WHEN** `dailyGain` is greater than or equal to zero
@@ -43,20 +43,32 @@ The dashboard SHALL display at minimum a Total Portfolio Value card and a Daily 
 - **WHEN** `dailyGain` is less than zero
 - **THEN** the loss badge renders with `--danger` text on `--danger-bg` background with a downward indicator
 
+#### Scenario: Positive total return renders as success pill
+- **WHEN** `totalReturn` is greater than or equal to zero
+- **THEN** the Total Return card badge renders with `--success` text on `--success-bg` background
+
+#### Scenario: Negative total return renders as danger pill
+- **WHEN** `totalReturn` is less than zero
+- **THEN** the Total Return card badge renders with `--danger` text on `--danger-bg` background
+
 ### Requirement: Holdings table displays all positions with readable data alignment
-The holdings table SHALL display ticker, shares, average cost, current price, total value, and profit/loss columns. All numeric columns SHALL use `font-variant-numeric: tabular-nums` and JetBrains Mono. The ticker cell SHALL show the company name as a subordinate sub-label. The profit/loss column SHALL show the dollar value and percentage stacked vertically, color-coded with success/danger tokens.
+The holdings table SHALL display ticker, shares, average cost, current price, total value, and profit/loss columns. All values SHALL be read directly from the `StockPosition` fields returned by the service — the component SHALL NOT perform any arithmetic. Numeric columns SHALL use `font-variant-numeric: tabular-nums` and JetBrains Mono. The ticker cell SHALL show the company name as a subordinate sub-label. The profit/loss column SHALL show the dollar value and percentage stacked vertically, color-coded with success/danger tokens.
 
 #### Scenario: Holdings render for all positions
 - **WHEN** portfolio data is loaded
-- **THEN** one table row is rendered per position with all six columns populated
+- **THEN** one table row is rendered per position with all six columns populated using pre-computed fields from the service response
 
 #### Scenario: Profit/loss is color-coded per row
-- **WHEN** a position has a positive profit/loss
-- **THEN** that cell renders in `--success`; when negative, in `--danger`
+- **WHEN** a position has a positive `unrealizedGain`
+- **THEN** that cell renders in `--success`; when `unrealizedGain` is negative, in `--danger`
 
 #### Scenario: Table rows have a hover state
 - **WHEN** the user hovers over a table row
 - **THEN** the row background changes to `--bg-subtle`
+
+#### Scenario: No arithmetic in component render
+- **WHEN** the holdings table renders
+- **THEN** no multiplication, division, or subtraction is performed inside the component — all values come directly from position fields
 
 ### Requirement: Dashboard surfaces animate in on load
 All primary surfaces (header, cards, table) SHALL animate in with a staggered CSS `fadeUp` entrance animation on first mount. Each element is offset by 60ms. Total animation budget SHALL NOT exceed 600ms. Animations SHALL NOT loop.
