@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { useTheme } from './context/ThemeContext'
+import AssetAllocationChart from './features/AssetAllocationChart/AssetAllocationChart'
 import { PortfolioChart } from './features/PortfolioChart/PortfolioChart'
 import { StockService } from './services/StockService'
 import type { PortfolioSummary } from './types'
@@ -59,6 +60,7 @@ function LoadingState({ theme, toggleTheme }: { theme: string; toggleTheme: () =
           <div className="skeleton skeleton-card" />
         </div>
         <div className="skeleton skeleton-chart" />
+        <div className="skeleton skeleton-alloc" />
         <div className="skeleton skeleton-table" />
       </div>
     </div>
@@ -135,6 +137,8 @@ function App() {
         </div>
 
         <PortfolioChart />
+
+        {portfolio && <AssetAllocationChart data={portfolio.assetAllocation} />}
 
         {/* Holdings Table */}
         <section className="holdings-section">

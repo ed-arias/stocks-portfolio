@@ -18,6 +18,14 @@ Best practices:
 ## [Unreleased]
 
 ### Added
+- Asset allocation donut chart on the dashboard (between history chart and holdings table) showing portfolio breakdown by asset class (Stocks, ETFs, Crypto, Cash) with hover tooltips and a color-coded legend
+- `AssetAllocationChart` feature component — SVG donut with animated segments, absolute-positioned tooltip, and per-segment opacity dimming on hover
+- `AssetClass` union type and `AssetAllocationBreakdown` interface exported from `src/types/index.ts`
+- `assetClass` field on `StockPosition`; `assetAllocation` array on `PortfolioSummary` — both pre-computed by the service layer
+- Four CSS custom property tokens for asset class colors: `--asset-stock`, `--asset-etf`, `--asset-crypto`, `--asset-cash` (light and dark variants)
+- Mock positions expanded with VOO (ETF) and BTC (crypto) entries; `assetAllocation` array added to `MOCK_SUMMARY`
+- Allocation chart skeleton block in the loading shimmer, positioned between the history chart and holdings table
+- `GET /portfolio/summary` Backend API Contract updated with new `assetClass` and `assetAllocation` fields in `README.md`
 - Portfolio value history chart on the dashboard with period selector (1W / 1M / 3M / YTD / 1Y / All), gradient area fill, custom tooltip, and full light/dark theme support
 - `PortfolioChart` feature component using Recharts `AreaChart` with responsive container
 - `Period` union type and `PortfolioHistoryPoint` interface exported from `src/types/index.ts`

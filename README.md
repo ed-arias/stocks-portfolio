@@ -62,8 +62,14 @@ Returns the full portfolio overview.
       "unrealizedGainPercentage": 23.95,
       "dailyChange": 18.50,
       "dailyChangePercentage": 1.00,
+      "assetClass": "stock",
       "portfolioWeight": 6.67
     }
+  ],
+  "assetAllocation": [
+    { "assetClass": "stock",  "value": 16971.53, "percentage": 60.85 },
+    { "assetClass": "etf",    "value":  8000.00, "percentage": 28.68 },
+    { "assetClass": "crypto", "value":  2919.92, "percentage": 10.47 }
   ]
 }
 ```
@@ -94,7 +100,17 @@ interface StockPosition {
   unrealizedGainPercentage: number;    // unrealizedGain / costBasis × 100
   dailyChange: number;                 // Absolute $ change today for this position
   dailyChangePercentage: number;       // % change today for this position
+  assetClass: AssetClass;              // Asset class assigned by backend
   portfolioWeight: number;             // marketValue / totalPortfolioValue × 100
+}
+
+type AssetClass = 'stock' | 'etf' | 'crypto' | 'cash';
+
+interface AssetAllocationBreakdown {
+  assetClass: AssetClass;
+  value: number;      // Total market value of this class in USD
+  percentage: number; // Share of total portfolio value (0–100); pre-computed by backend
+  // Note: display labels are a frontend concern (see LABEL_MAP in AssetAllocationChart)
 }
 ```
 
