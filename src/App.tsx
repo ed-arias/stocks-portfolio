@@ -196,6 +196,7 @@ function App() {
                   <th>Avg Cost</th>
                   <th>Price</th>
                   <th>Total Value</th>
+                  <th>Daily Change</th>
                   <th>Profit / Loss</th>
                 </tr>
               </thead>
@@ -210,6 +211,12 @@ function App() {
                     <td>{formatCurrency(pos.avgCost)}</td>
                     <td>{formatCurrency(pos.currentPrice)}</td>
                     <td>{formatCurrency(pos.marketValue)}</td>
+                    <td className={pos.dailyChange >= 0 ? 'positive' : 'negative'}>
+                      <div className="pl-cell">
+                        <span>{formatCurrency(pos.dailyChange)}</span>
+                        <span className="pl-pct">{pos.dailyChangePercentage.toFixed(2)}%</span>
+                      </div>
+                    </td>
                     <td className={pos.unrealizedGain >= 0 ? 'positive' : 'negative'}>
                       <div className="pl-cell">
                         <span>{formatCurrency(pos.unrealizedGain)}</span>

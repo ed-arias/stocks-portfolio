@@ -21,9 +21,9 @@ Features are grouped by epic and tagged with priority:
 | 1.5 | Asset allocation donut chart (stocks, ETFs, crypto, cash) | ✅ Done | Empower, Morningstar |
 | 1.12 | Holdings weight donut chart (per-position allocation %) | ✅ Done | Empower, Morningstar |
 | 1.13 | Unified allocation chart with dimension selector | ✅ Done | — |
-| 1.6 | Sector allocation chart | P1 | Empower, Morningstar, Yahoo Finance |
-| 1.7 | Geographic / regional exposure chart | P2 | Sharesight, Delta, Parqet |
-| 1.8 | Market cap breakdown chart (large / mid / small cap) | P2 | Morningstar |
+| 1.6 | Sector allocation chart | ⚠️ Needs revision — sector concept doesn't apply uniformly to ETFs and crypto; revisit when mixed-asset sector handling is defined | Empower, Morningstar, Yahoo Finance |
+| 1.7 | Geographic / regional exposure chart | ⚠️ Needs revision — regional exposure doesn't apply uniformly to ETFs and crypto; revisit when per-position geographic data model is defined | Sharesight, Delta, Parqet |
+| 1.8 | Market cap breakdown chart (large / mid / small cap) | ⚠️ Needs revision — large/mid/small cap taxonomy is stock-specific; ETF classification requires look-through or style category; crypto doesn't map to this taxonomy | Morningstar |
 | 1.9 | Multi-portfolio support (manage separate portfolios) | P2 | Sharesight, Delta, Stock Events |
 | 1.10 | Real-time intraday portfolio value chart | P2 | Stock Events, Delta |
 | 1.11 | Net worth dashboard (investments + cash + liabilities) | P3 | Empower, Parqet, Kubera |
@@ -36,7 +36,7 @@ Features are grouped by epic and tagged with priority:
 |---|---|---|---|
 | 2.1 | Holdings list with ticker, shares, current price, market value | ✅ Done | All |
 | 2.2 | Per-holding unrealized gain/loss (absolute + %) | ✅ Done | All |
-| 2.3 | Per-holding daily change (absolute + %) | P0 | All |
+| 2.3 | Per-holding daily change (absolute + %) | ✅ Done | All |
 | 2.4 | Per-holding portfolio weight (%) | ~~superseded by 1.12~~ | Empower, Morningstar |
 | 2.5 | Per-holding average cost / cost basis | ✅ Done | All |
 | 2.6 | Per-holding dividend yield | P1 | Sharesight, Stock Events, Parqet |

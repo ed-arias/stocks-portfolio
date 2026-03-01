@@ -52,11 +52,15 @@ The dashboard SHALL display at minimum a Total Portfolio Value card, a Daily Gai
 - **THEN** the Total Return card badge renders with `--danger` text on `--danger-bg` background
 
 ### Requirement: Holdings table displays all positions with readable data alignment
-The holdings table SHALL display ticker, shares, average cost, current price, total value, and profit/loss columns. All values SHALL be read directly from the `StockPosition` fields returned by the service — the component SHALL NOT perform any arithmetic. Numeric columns SHALL use `font-variant-numeric: tabular-nums` and JetBrains Mono. The ticker cell SHALL show the company name as a subordinate sub-label. The profit/loss column SHALL show the dollar value and percentage stacked vertically, color-coded with success/danger tokens.
+The holdings table SHALL display ticker, shares, average cost, current price, total value, profit/loss, and **daily change** columns. All values SHALL be read directly from the `StockPosition` fields returned by the service — the component SHALL NOT perform any arithmetic. Numeric columns SHALL use `font-variant-numeric: tabular-nums` and JetBrains Mono. The ticker cell SHALL show the company name as a subordinate sub-label. The profit/loss column SHALL show the dollar value and percentage stacked vertically, color-coded with success/danger tokens. The daily change column SHALL show `dailyChange` (absolute, formatted as currency) and `dailyChangePercentage` (%) stacked vertically in the same layout as the profit/loss column, color-coded green when `dailyChange >= 0` and red when `dailyChange < 0`.
 
 #### Scenario: Holdings render for all positions
 - **WHEN** portfolio data is loaded
-- **THEN** one table row is rendered per position with all six columns populated using pre-computed fields from the service response
+- **THEN** one table row is rendered per position with all seven columns populated using pre-computed fields from the service response
+
+#### Scenario: Daily change is color-coded per row
+- **WHEN** a position has a positive or zero `dailyChange`
+- **THEN** the daily change cell renders in `--success`; when `dailyChange` is negative, in `--danger`
 
 #### Scenario: Profit/loss is color-coded per row
 - **WHEN** a position has a positive `unrealizedGain`
