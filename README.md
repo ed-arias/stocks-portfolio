@@ -98,6 +98,48 @@ interface StockPosition {
 }
 ```
 
+### `GET /portfolio/history`
+
+Returns portfolio total value over time for a given period.
+
+**Query Parameters**
+
+| Parameter | Type | Values |
+|---|---|---|
+| `period` | string | `1W` `1M` `3M` `YTD` `1Y` `All` |
+
+**Period reference**
+
+| Period | Granularity | Approx. points | Coverage |
+|---|---|---|---|
+| `1W` | Daily (trading days only) | ~5 | Last 7 calendar days |
+| `1M` | Daily (trading days only) | ~21 | Last 30 calendar days |
+| `3M` | Daily (trading days only) | ~65 | Last 90 calendar days |
+| `YTD` | Daily (trading days only) | ~40 | Jan 1 to present |
+| `1Y` | Weekly (every 7 days) | ~52 | Last 12 months |
+| `All` | Bi-weekly (every 14 days) | ~52+ | Full portfolio history |
+
+Weekends and market holidays are excluded from daily-granularity periods. The final data point always reflects the current portfolio `totalValue`.
+
+**Response**
+```json
+[
+  { "date": "2026-02-03", "value": 26512.00 },
+  { "date": "2026-02-04", "value": 26734.45 }
+]
+```
+
+**Types**
+
+```typescript
+type Period = '1W' | '1M' | '3M' | 'YTD' | '1Y' | 'All';
+
+interface PortfolioHistoryPoint {
+  date: string;  // ISO 8601 date: YYYY-MM-DD
+  value: number; // Portfolio total value in USD
+}
+```
+
 > Currently running against mock data in `src/services/StockService.ts`. Swap the implementation to point at a real backend without any component changes.
 
 ## Project Structure

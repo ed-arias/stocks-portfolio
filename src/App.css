@@ -179,7 +179,6 @@
 /* ─── Staggered card animations ────────────────────────────── */
 .cards-grid .card:nth-child(1) { animation: fadeUp var(--anim-duration) var(--anim-ease) calc(var(--anim-stagger) * 1) both; }
 .cards-grid .card:nth-child(2) { animation: fadeUp var(--anim-duration) var(--anim-ease) calc(var(--anim-stagger) * 2) both; }
-.cards-grid .card:nth-child(3) { animation: fadeUp var(--anim-duration) var(--anim-ease) calc(var(--anim-stagger) * 3) both; }
 
 /* ─── Holdings Section ─────────────────────────────────────── */
 .holdings-section {
@@ -340,6 +339,7 @@
 .skeleton-title    { height: 2rem; width: 180px; margin-bottom: 0.5rem; border-radius: 10px; }
 .skeleton-cards    { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
 .skeleton-card     { height: 130px; border-radius: 16px; }
+.skeleton-chart    { height: 320px; border-radius: 16px; }
 .skeleton-table    { height: 300px; border-radius: 16px; }
 
 /* ─── Mobile (<900px) ──────────────────────────────────────── */

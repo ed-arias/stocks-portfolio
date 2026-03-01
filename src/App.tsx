@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { useTheme } from './context/ThemeContext'
+import { PortfolioChart } from './features/PortfolioChart/PortfolioChart'
 import { StockService } from './services/StockService'
 import type { PortfolioSummary } from './types'
 
@@ -57,6 +58,7 @@ function LoadingState({ theme, toggleTheme }: { theme: string; toggleTheme: () =
           <div className="skeleton skeleton-card" />
           <div className="skeleton skeleton-card" />
         </div>
+        <div className="skeleton skeleton-chart" />
         <div className="skeleton skeleton-table" />
       </div>
     </div>
@@ -130,12 +132,9 @@ function App() {
             </p>
           </div>
 
-          {/* Chart Placeholder */}
-          <div className="card">
-            <p className="card-label">Performance (7D)</p>
-            <div className="card-placeholder">Chart coming soon</div>
-          </div>
         </div>
+
+        <PortfolioChart />
 
         {/* Holdings Table */}
         <section className="holdings-section">

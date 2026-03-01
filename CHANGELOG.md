@@ -18,6 +18,12 @@ Best practices:
 ## [Unreleased]
 
 ### Added
+- Portfolio value history chart on the dashboard with period selector (1W / 1M / 3M / YTD / 1Y / All), gradient area fill, custom tooltip, and full light/dark theme support
+- `PortfolioChart` feature component using Recharts `AreaChart` with responsive container
+- `Period` union type and `PortfolioHistoryPoint` interface exported from `src/types/index.ts`
+- `StockService.getPortfolioHistory(period)` method with mock historical data fixtures for all six periods
+- Chart skeleton placeholder in the loading shimmer, positioned between summary cards and holdings table
+- `GET /portfolio/history` endpoint documented in `README.md` Backend API Contract section
 - Total Return summary card on the dashboard showing all-time absolute gain/loss (USD) and percentage with iOS-style pill badge
 
 ### Changed

@@ -16,7 +16,7 @@ Features are grouped by epic and tagged with priority:
 |---|---|---|---|
 | 1.1 | Total portfolio value card (current market value) | ✅ Done | All |
 | 1.2 | Day gain/loss card (absolute + %) with color indicator | ✅ Done | All |
-| 1.3 | Total return card (all-time absolute + %) | P0 | Empower, Sharesight |
+| 1.3 | Total return card (all-time absolute + %) | ✅ Done | Empower, Sharesight |
 | 1.4 | Portfolio value history line chart (1W / 1M / 3M / YTD / 1Y / All) | P0 | Yahoo Finance, Delta |
 | 1.5 | Asset allocation donut chart (stocks, ETFs, crypto, cash) | P1 | Empower, Morningstar |
 | 1.6 | Sector allocation chart | P1 | Empower, Morningstar, Yahoo Finance |

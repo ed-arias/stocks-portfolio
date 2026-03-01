@@ -1,0 +1,83 @@
+/* ─── Chart Section ─────────────────────────────────────────── */
+.chart-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem 1.5rem 1rem;
+  box-shadow: var(--shadow-sm);
+  animation: fadeUp var(--anim-duration) var(--anim-ease) calc(var(--anim-stagger) * 3) both;
+}
+
+/* ─── Chart Header ──────────────────────────────────────────── */
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.chart-title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+/* ─── Period Selector ───────────────────────────────────────── */
+.period-selector {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--bg-subtle);
+  border-radius: 10px;
+  padding: 0.2rem;
+}
+
+.period-btn {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 0.3rem 0.65rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  letter-spacing: 0.01em;
+}
+
+.period-btn:hover:not(.active) {
+  background: var(--border);
+  color: var(--text-primary);
+}
+
+.period-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ─── Tooltip ───────────────────────────────────────────────── */
+.chart-tooltip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  box-shadow: var(--shadow-md);
+}
+
+.chart-tooltip-value {
+  font-family: var(--font-data);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.chart-tooltip-date {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}

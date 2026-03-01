@@ -1,3 +1,10 @@
+export type Period = '1W' | '1M' | '3M' | 'YTD' | '1Y' | 'All';
+
+export interface PortfolioHistoryPoint {
+  date: string;  // ISO 8601 date: YYYY-MM-DD
+  value: number; // Portfolio total value in USD
+}
+
 export interface StockPosition {
   id: string;
   ticker: string;
