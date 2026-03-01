@@ -1,44 +1,35 @@
 import { useEffect, useState } from 'react'
-import type { AssetAllocationBreakdown } from '../../types'
+import type { AllocationBreakdown } from '../../types'
 
 const formatCurrency = (val: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val)
 
-const COLOR_MAP: Record<string, string> = {
-  stock:  'var(--asset-stock)',
-  etf:    'var(--asset-etf)',
-  crypto: 'var(--asset-crypto)',
-  cash:   'var(--asset-cash)',
-}
-
-const LABEL_MAP: Record<string, string> = {
-  stock:  'Stocks',
-  etf:    'ETFs',
-  crypto: 'Crypto',
-  cash:   'Cash',
-}
-
-const RADIUS      = 80
+const RADIUS       = 80
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
-const GAP         = 8
+const GAP          = 8
 const STROKE_WIDTH = 28
-const CX          = 110
-const CY          = 110
+const CX           = 110
+const CY           = 110
 
 interface TooltipState {
   x: number
   y: number
-  segment: AssetAllocationBreakdown
+  item: AllocationBreakdown
+  label: string
+  color: string
 }
 
 interface Props {
-  data: AssetAllocationBreakdown[]
+  data:     AllocationBreakdown[]
+  title:    string
+  colorFn:  (item: AllocationBreakdown) => string
+  labelFn:  (item: AllocationBreakdown) => string
 }
 
-export default function AssetAllocationChart({ data }: Props) {
-  const [tooltip, setTooltip]           = useState<TooltipState | null>(null)
-  const [animated, setAnimated]         = useState(false)
-  const [hoveredClass, setHoveredClass] = useState<string | null>(null)
+export default function AllocationChart({ data, title, colorFn, labelFn }: Props) {
+  const [tooltip,    setTooltip]    = useState<TooltipState | null>(null)
+  const [animated,   setAnimated]   = useState(false)
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null)
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setAnimated(true))
@@ -48,11 +39,20 @@ export default function AssetAllocationChart({ data }: Props) {
   const nonZero = data.filter((d) => d.percentage > 0)
 
   const segments = nonZero.reduce<
-    { item: AssetAllocationBreakdown; arcLength: number; dashOffset: number }[]
+    { item: AllocationBreakdown; arcLength: number; dashOffset: number; color: string; label: string }[]
   >((acc, item) => {
-    const offset = acc.reduce((sum, s) => sum + s.arcLength + GAP, 0)
+    const offset    = acc.reduce((sum, s) => sum + s.arcLength + GAP, 0)
     const arcLength = (item.percentage / 100) * CIRCUMFERENCE - GAP
-    return [...acc, { item, arcLength, dashOffset: CIRCUMFERENCE - offset }]
+    return [
+      ...acc,
+      {
+        item,
+        arcLength,
+        dashOffset: CIRCUMFERENCE - offset,
+        color:      colorFn(item),
+        label:      labelFn(item),
+      },
+    ]
   }, [])
 
   return (
@@ -69,7 +69,7 @@ export default function AssetAllocationChart({ data }: Props) {
       }}
       onMouseLeave={() => {
         setTooltip(null)
-        setHoveredClass(null)
+        setHoveredKey(null)
       }}
     >
       {/* Card label */}
@@ -82,7 +82,7 @@ export default function AssetAllocationChart({ data }: Props) {
         color:         'var(--text-muted)',
         marginBottom:  '1.5rem',
       }}>
-        Asset Allocation
+        {title}
       </p>
 
       {/* Body: donut + legend */}
@@ -95,7 +95,7 @@ export default function AssetAllocationChart({ data }: Props) {
             height={220}
             viewBox="0 0 220 220"
             role="img"
-            aria-label="Asset allocation donut chart"
+            aria-label={`${title} donut chart`}
           >
             {/* Track ring */}
             <circle
@@ -106,12 +106,12 @@ export default function AssetAllocationChart({ data }: Props) {
             />
 
             {/* Segments */}
-            {segments.map(({ item, arcLength, dashOffset }) => (
+            {segments.map(({ item, arcLength, dashOffset, color }) => (
               <circle
-                key={item.assetClass}
+                key={item.key}
                 cx={CX} cy={CY} r={RADIUS}
                 fill="none"
-                stroke={COLOR_MAP[item.assetClass]}
+                stroke={color}
                 strokeWidth={STROKE_WIDTH}
                 strokeLinecap="butt"
                 strokeDasharray={
@@ -123,17 +123,17 @@ export default function AssetAllocationChart({ data }: Props) {
                 transform={`rotate(-90 ${CX} ${CY})`}
                 style={{
                   transition: 'stroke-dasharray 0.75s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s',
-                  opacity:    hoveredClass && hoveredClass !== item.assetClass ? 0.25 : 1,
+                  opacity:    hoveredKey && hoveredKey !== item.key ? 0.25 : 1,
                   cursor:     'pointer',
                 }}
                 onMouseMove={(e) => {
                   const rect = e.currentTarget.closest('svg')!.getBoundingClientRect()
-                  setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top, segment: item })
-                  setHoveredClass(item.assetClass)
+                  setTooltip({ x: e.clientX - rect.left, y: e.clientY - rect.top, item, label: labelFn(item), color })
+                  setHoveredKey(item.key)
                 }}
                 onMouseLeave={() => {
                   setTooltip(null)
-                  setHoveredClass(null)
+                  setHoveredKey(null)
                 }}
               />
             ))}
@@ -151,33 +151,33 @@ export default function AssetAllocationChart({ data }: Props) {
               textAnchor="middle"
               style={{ fontFamily: 'var(--font-data)', fontSize: '0.8rem', fill: 'var(--text-secondary)' }}
             >
-              {nonZero.length} classes
+              {nonZero.length} items
             </text>
           </svg>
         </div>
 
         {/* Legend */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', flex: 1, minWidth: 160 }}>
-          {segments.map(({ item }) => (
+          {segments.map(({ item, color, label }) => (
             <div
-              key={item.assetClass}
+              key={item.key}
               style={{
                 display:    'flex',
                 alignItems: 'center',
                 gap:        '0.65rem',
                 transition: 'opacity 0.2s',
-                opacity:    hoveredClass && hoveredClass !== item.assetClass ? 0.35 : 1,
+                opacity:    hoveredKey && hoveredKey !== item.key ? 0.35 : 1,
                 cursor:     'default',
               }}
-              onMouseEnter={() => setHoveredClass(item.assetClass)}
-              onMouseLeave={() => setHoveredClass(null)}
+              onMouseEnter={() => setHoveredKey(item.key)}
+              onMouseLeave={() => setHoveredKey(null)}
             >
               {/* Color swatch */}
               <span style={{
                 width:        10,
                 height:       10,
                 borderRadius: '50%',
-                background:   COLOR_MAP[item.assetClass],
+                background:   color,
                 flexShrink:   0,
               }} />
 
@@ -188,7 +188,7 @@ export default function AssetAllocationChart({ data }: Props) {
                 color:      'var(--text-secondary)',
                 flex:       1,
               }}>
-                {LABEL_MAP[item.assetClass]}
+                {label}
               </span>
 
               {/* Percentage */}
@@ -235,13 +235,13 @@ export default function AssetAllocationChart({ data }: Props) {
           whiteSpace:    'nowrap',
         }}>
           <p style={{ fontFamily: 'var(--font-ui)', fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>
-            {LABEL_MAP[tooltip.segment.assetClass]}
+            {tooltip.label}
           </p>
           <p style={{ fontFamily: 'var(--font-data)', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-            {formatCurrency(tooltip.segment.value)}
+            {formatCurrency(tooltip.item.value)}
           </p>
           <p style={{ fontFamily: 'var(--font-data)', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>
-            {tooltip.segment.percentage.toFixed(1)}%
+            {tooltip.item.percentage.toFixed(1)}%
           </p>
         </div>
       )}

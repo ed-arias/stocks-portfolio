@@ -2,10 +2,10 @@ export type Period = '1W' | '1M' | '3M' | 'YTD' | '1Y' | 'All';
 
 export type AssetClass = 'stock' | 'etf' | 'crypto' | 'cash';
 
-export interface AssetAllocationBreakdown {
-  assetClass: AssetClass;
+export interface AllocationBreakdown {
+  key: string;        // Asset class key, ticker, sector, etc.
   value: number;      // Total market value in USD
-  percentage: number; // Share of total portfolio value (0–100)
+  percentage: number; // Portfolio weight (0–100)
 }
 
 export interface PortfolioHistoryPoint {
@@ -28,7 +28,6 @@ export interface StockPosition {
   unrealizedGainPercentage: number;
   dailyChange: number;
   dailyChangePercentage: number;
-  portfolioWeight: number;
 }
 
 export interface PortfolioSummary {
@@ -38,5 +37,8 @@ export interface PortfolioSummary {
   totalReturn: number;
   totalReturnPercentage: number;
   positions: StockPosition[];
-  assetAllocation: AssetAllocationBreakdown[];
+  allocations: {
+    byAssetClass: AllocationBreakdown[];
+    byHolding: AllocationBreakdown[];
+  };
 }

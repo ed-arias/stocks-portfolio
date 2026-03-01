@@ -6,15 +6,11 @@ TBD - created by archiving change service-driven-calculations. Update Purpose af
 ## Requirements
 
 ### Requirement: StockPosition includes all pre-computed per-holding metrics
-The `StockPosition` type SHALL include the following required fields returned by the backend: `marketValue`, `unrealizedGain`, `unrealizedGainPercentage`, `dailyChange`, `dailyChangePercentage`, and `portfolioWeight`. None of these fields SHALL be computed by the frontend.
+The `StockPosition` type SHALL include the following required fields returned by the backend: `marketValue`, `unrealizedGain`, `unrealizedGainPercentage`, `dailyChange`, and `dailyChangePercentage`. None of these fields SHALL be computed by the frontend.
 
 #### Scenario: Position fields are present in service response
 - **WHEN** `StockService.getPortfolioSummary()` resolves
-- **THEN** every position in `positions[]` contains non-null values for all six pre-computed fields
-
-#### Scenario: portfolioWeight sums to 100
-- **WHEN** `StockService.getPortfolioSummary()` resolves
-- **THEN** the sum of `portfolioWeight` across all positions equals 100 (within floating point tolerance)
+- **THEN** every position in `positions[]` contains non-null values for all five pre-computed fields
 
 ### Requirement: PortfolioSummary includes total return fields
 The `PortfolioSummary` type SHALL include `totalReturn: number` and `totalReturnPercentage: number` as required fields returned by the backend.
@@ -56,18 +52,36 @@ The `StockPosition` type SHALL include an `assetClass: AssetClass` field. `Asset
 - **WHEN** `StockService.getPortfolioSummary()` resolves
 - **THEN** every entry in `positions[]` contains a non-null `assetClass` value that is one of the four valid union members
 
-### Requirement: PortfolioSummary includes pre-computed asset allocation breakdown
-The `PortfolioSummary` type SHALL include an `assetAllocation: AssetAllocationBreakdown[]` field. `AssetAllocationBreakdown` SHALL be an interface exported from `src/types/index.ts` with the following required fields: `assetClass: AssetClass`, `value: number` (total market value in USD), and `percentage: number` (share of total portfolio value, 0–100). Display labels are a frontend concern and SHALL NOT be returned by the backend. The backend pre-computes this array by grouping positions by `assetClass` and summing their `marketValue` — the frontend SHALL NOT perform this aggregation.
+### Requirement: AllocationBreakdown is the generic allocation type
+The `AllocationBreakdown` interface SHALL be exported from `src/types/index.ts` with exactly three fields: `key: string` (dimension-specific identifier — asset class key, ticker, etc.), `value: number` (total market value in USD), and `percentage: number` (portfolio weight 0–100). `AssetAllocationBreakdown` SHALL be removed.
 
-#### Scenario: assetAllocation is present in service response
+#### Scenario: AllocationBreakdown is importable from types
+- **WHEN** a component imports `AllocationBreakdown`
+- **THEN** it is available as a named export from `src/types/index.ts`
+
+#### Scenario: AssetAllocationBreakdown is not present
+- **WHEN** a file imports `AssetAllocationBreakdown` from `src/types/index.ts`
+- **THEN** the TypeScript compiler reports an error (export does not exist)
+
+### Requirement: PortfolioSummary includes allocations object with byAssetClass and byHolding
+The `PortfolioSummary` type SHALL include `allocations: { byAssetClass: AllocationBreakdown[]; byHolding: AllocationBreakdown[] }`. The `assetAllocation` field SHALL be removed. `byAssetClass` groups positions by asset class; `byHolding` has one entry per position with `key === ticker` and `percentage` equal to the holding's portfolio weight.
+
+#### Scenario: allocations object present in service response
 - **WHEN** `StockService.getPortfolioSummary()` resolves
-- **THEN** `assetAllocation` is a non-empty array where every entry has non-null values for `assetClass`, `value`, and `percentage`
+- **THEN** the result contains `allocations.byAssetClass` (non-empty array) and `allocations.byHolding` (one entry per position)
 
-#### Scenario: assetAllocation percentages sum to 100
+#### Scenario: byHolding percentages sum to 100
 - **WHEN** `StockService.getPortfolioSummary()` resolves
-- **THEN** the sum of `percentage` across all `assetAllocation` entries equals 100 (within floating point tolerance)
+- **THEN** the sum of `percentage` across all `allocations.byHolding` entries equals 100 (within floating point tolerance)
 
-#### Scenario: Types are exported from src/types/index.ts
-- **WHEN** a component imports `AssetClass` or `AssetAllocationBreakdown`
-- **THEN** both types are available as named exports from `src/types/index.ts`
+#### Scenario: byAssetClass percentages sum to 100
+- **WHEN** `StockService.getPortfolioSummary()` resolves
+- **THEN** the sum of `percentage` across all `allocations.byAssetClass` entries equals 100 (within floating point tolerance)
+
+### Requirement: StockPosition does not include portfolioWeight
+The `StockPosition` type SHALL NOT include a `portfolioWeight` field. Per-holding portfolio weight data is exclusively available via `allocations.byHolding`.
+
+#### Scenario: portfolioWeight absent from StockPosition
+- **WHEN** a component accesses `position.portfolioWeight`
+- **THEN** the TypeScript compiler reports an error (property does not exist)
 

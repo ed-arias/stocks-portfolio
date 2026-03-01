@@ -18,14 +18,27 @@ Best practices:
 ## [Unreleased]
 
 ### Added
+- **Holdings weight donut chart** (feature 1.12) — second `AllocationChart` on the dashboard showing per-position portfolio weight; each segment uses the position's asset class color for visual consistency with the asset allocation chart; tooltip shows ticker, company name, value, and weight %
+- Generic `AllocationChart` component (`src/features/AllocationChart/AllocationChart.tsx`) — replaces `AssetAllocationChart`; accepts `data: AllocationBreakdown[]`, `title`, `colorFn`, and `labelFn` props; all color/label logic is supplied by the caller, enabling any allocation dimension without modifying the component
+- `AllocationBreakdown` interface exported from `src/types/index.ts` — generic allocation type with `key: string`, `value`, `percentage`, and optional `assetClass`
+- `allocations: { byAssetClass, byHolding }` object on `PortfolioSummary` — replaces `assetAllocation`; `byHolding` has one entry per position (key = ticker) pre-computed by the backend
+- Second allocation skeleton block in the loading shimmer for the holdings weight chart
 - Asset allocation donut chart on the dashboard (between history chart and holdings table) showing portfolio breakdown by asset class (Stocks, ETFs, Crypto, Cash) with hover tooltips and a color-coded legend
-- `AssetAllocationChart` feature component — SVG donut with animated segments, absolute-positioned tooltip, and per-segment opacity dimming on hover
-- `AssetClass` union type and `AssetAllocationBreakdown` interface exported from `src/types/index.ts`
-- `assetClass` field on `StockPosition`; `assetAllocation` array on `PortfolioSummary` — both pre-computed by the service layer
+- `AssetClass` union type exported from `src/types/index.ts`
+- `assetClass` field on `StockPosition` — assigned by backend
 - Four CSS custom property tokens for asset class colors: `--asset-stock`, `--asset-etf`, `--asset-crypto`, `--asset-cash` (light and dark variants)
-- Mock positions expanded with VOO (ETF) and BTC (crypto) entries; `assetAllocation` array added to `MOCK_SUMMARY`
+- Mock positions expanded with VOO (ETF) and BTC (crypto) entries
 - Allocation chart skeleton block in the loading shimmer, positioned between the history chart and holdings table
-- `GET /portfolio/summary` Backend API Contract updated with new `assetClass` and `assetAllocation` fields in `README.md`
+
+### Changed
+- **BREAKING** Replaced `AssetAllocationBreakdown` interface with generic `AllocationBreakdown` — `assetClass: AssetClass` key renamed to `key: string`; `AssetAllocationBreakdown` is removed
+- **BREAKING** Removed `portfolioWeight` from `StockPosition` — per-holding weight data is now available exclusively via `portfolio.allocations.byHolding`
+- **BREAKING** Replaced `assetAllocation: AssetAllocationBreakdown[]` on `PortfolioSummary` with `allocations: { byAssetClass: AllocationBreakdown[]; byHolding: AllocationBreakdown[] }`
+- `AssetAllocationChart` component deleted and replaced by generic `AllocationChart`
+- `README.md` Backend API Contract updated to reflect new `allocations` shape and removal of `portfolioWeight`
+
+### Removed
+- Backlog feature 2.4 (per-holding portfolio weight column in holdings table) — superseded by the holdings weight donut chart (feature 1.12)
 - Portfolio value history chart on the dashboard with period selector (1W / 1M / 3M / YTD / 1Y / All), gradient area fill, custom tooltip, and full light/dark theme support
 - `PortfolioChart` feature component using Recharts `AreaChart` with responsive container
 - `Period` union type and `PortfolioHistoryPoint` interface exported from `src/types/index.ts`

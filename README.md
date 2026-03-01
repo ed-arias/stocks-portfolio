@@ -62,15 +62,24 @@ Returns the full portfolio overview.
       "unrealizedGainPercentage": 23.95,
       "dailyChange": 18.50,
       "dailyChangePercentage": 1.00,
-      "assetClass": "stock",
-      "portfolioWeight": 6.67
+      "assetClass": "stock"
     }
   ],
-  "assetAllocation": [
-    { "assetClass": "stock",  "value": 16971.53, "percentage": 60.85 },
-    { "assetClass": "etf",    "value":  8000.00, "percentage": 28.68 },
-    { "assetClass": "crypto", "value":  2919.92, "percentage": 10.47 }
-  ]
+  "allocations": {
+    "byAssetClass": [
+      { "key": "stock",  "value": 16971.53, "percentage": 60.85 },
+      { "key": "etf",    "value":  8000.00, "percentage": 28.68 },
+      { "key": "crypto", "value":  2919.92, "percentage": 10.47 }
+    ],
+    "byHolding": [
+      { "key": "AAPL", "value":  1859.20, "percentage":  6.67 },
+      { "key": "TSLA", "value":   987.90, "percentage":  3.54 },
+      { "key": "NVDA", "value": 10891.95, "percentage": 39.05 },
+      { "key": "MSFT", "value":  3232.48, "percentage": 11.59 },
+      { "key": "VOO",  "value":  8000.00, "percentage": 28.68 },
+      { "key": "BTC",  "value":  2919.92, "percentage": 10.47 }
+    ]
+  }
 }
 ```
 
@@ -84,6 +93,10 @@ interface PortfolioSummary {
   totalReturn: number;           // All-time absolute gain/loss in USD
   totalReturnPercentage: number; // All-time return as a percentage
   positions: StockPosition[];
+  allocations: {
+    byAssetClass: AllocationBreakdown[]; // Grouped by asset class
+    byHolding: AllocationBreakdown[];    // One entry per position (key === ticker)
+  };
 }
 
 interface StockPosition {
@@ -94,23 +107,21 @@ interface StockPosition {
   avgCost: number;                     // Average cost basis per share in USD
   currentPrice: number;                // Latest market price per share in USD
   lastUpdate: string;                  // ISO 8601 timestamp
+  assetClass: AssetClass;              // Asset class assigned by backend
   // Pre-computed by backend
   marketValue: number;                 // shares × currentPrice
   unrealizedGain: number;              // marketValue − (shares × avgCost)
   unrealizedGainPercentage: number;    // unrealizedGain / costBasis × 100
   dailyChange: number;                 // Absolute $ change today for this position
   dailyChangePercentage: number;       // % change today for this position
-  assetClass: AssetClass;              // Asset class assigned by backend
-  portfolioWeight: number;             // marketValue / totalPortfolioValue × 100
 }
 
 type AssetClass = 'stock' | 'etf' | 'crypto' | 'cash';
 
-interface AssetAllocationBreakdown {
-  assetClass: AssetClass;
-  value: number;      // Total market value of this class in USD
-  percentage: number; // Share of total portfolio value (0–100); pre-computed by backend
-  // Note: display labels are a frontend concern (see LABEL_MAP in AssetAllocationChart)
+interface AllocationBreakdown {
+  key: string;        // Dimension-specific identifier: asset class key, ticker, sector, etc.
+  value: number;      // Total market value in USD
+  percentage: number; // Portfolio weight (0–100); pre-computed by backend
 }
 ```
 

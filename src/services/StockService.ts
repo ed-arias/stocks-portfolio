@@ -1,4 +1,4 @@
-import type { Period, PortfolioHistoryPoint, PortfolioSummary, StockPosition } from '../types';
+import type { AllocationBreakdown, Period, PortfolioHistoryPoint, PortfolioSummary, StockPosition } from '../types';
 
 // ─── History helpers (run once at module load, not per-call) ──────────────────
 
@@ -66,7 +66,6 @@ const MOCK_POSITIONS: StockPosition[] = [
     unrealizedGainPercentage: 23.95,
     dailyChange: 18.50,
     dailyChangePercentage: 1.00,
-    portfolioWeight: 6.67,
   },
   {
     id: '2',
@@ -82,7 +81,6 @@ const MOCK_POSITIONS: StockPosition[] = [
     unrealizedGainPercentage: -1.21,
     dailyChange: -6.20,
     dailyChangePercentage: -0.63,
-    portfolioWeight: 3.54,
   },
   {
     id: '3',
@@ -98,7 +96,6 @@ const MOCK_POSITIONS: StockPosition[] = [
     unrealizedGainPercentage: 61.36,
     dailyChange: 312.45,
     dailyChangePercentage: 2.95,
-    portfolioWeight: 39.05,
   },
   {
     id: '4',
@@ -114,7 +111,6 @@ const MOCK_POSITIONS: StockPosition[] = [
     unrealizedGainPercentage: 30.34,
     dailyChange: 127.43,
     dailyChangePercentage: 4.11,
-    portfolioWeight: 11.59,
   },
   {
     id: '5',
@@ -130,7 +126,6 @@ const MOCK_POSITIONS: StockPosition[] = [
     unrealizedGainPercentage: 5.26,
     dailyChange: 120.00,
     dailyChangePercentage: 1.52,
-    portfolioWeight: 28.68,
   },
   {
     id: '6',
@@ -146,8 +141,22 @@ const MOCK_POSITIONS: StockPosition[] = [
     unrealizedGainPercentage: 16.80,
     dailyChange: -87.60,
     dailyChangePercentage: -2.91,
-    portfolioWeight: 10.47,
   },
+];
+
+const BY_ASSET_CLASS: AllocationBreakdown[] = [
+  { key: 'stock',  value: 16971.53, percentage: 60.85 },
+  { key: 'etf',    value:  8000.00, percentage: 28.68 },
+  { key: 'crypto', value:  2919.92, percentage: 10.47 },
+];
+
+const BY_HOLDING: AllocationBreakdown[] = [
+  { key: 'AAPL', value:  1859.20, percentage:  6.67 },
+  { key: 'TSLA', value:   987.90, percentage:  3.54 },
+  { key: 'NVDA', value: 10891.95, percentage: 39.05 },
+  { key: 'MSFT', value:  3232.48, percentage: 11.59 },
+  { key: 'VOO',  value:  8000.00, percentage: 28.68 },
+  { key: 'BTC',  value:  2919.92, percentage: 10.47 },
 ];
 
 const MOCK_SUMMARY: PortfolioSummary = {
@@ -157,11 +166,10 @@ const MOCK_SUMMARY: PortfolioSummary = {
   totalReturn: 5241.53,
   totalReturnPercentage: 23.14,
   positions: MOCK_POSITIONS,
-  assetAllocation: [
-    { assetClass: 'stock',  value: 16971.53, percentage: 60.85 },
-    { assetClass: 'etf',    value:  8000.00, percentage: 28.68 },
-    { assetClass: 'crypto', value:  2919.92, percentage: 10.47 },
-  ],
+  allocations: {
+    byAssetClass: BY_ASSET_CLASS,
+    byHolding:    BY_HOLDING,
+  },
 };
 
 export const StockService = {
