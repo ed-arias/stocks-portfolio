@@ -1,9 +1,4 @@
-# asset-allocation-chart Specification
-
-## Purpose
-Dashboard section that renders an `AllocationChart` instance showing portfolio breakdown by asset class (Stocks, ETFs, Crypto, Cash). Uses the generic `AllocationChart` component with an algorithmic pastel color function and a module-scope `ASSET_CLASS_LABELS` map. No financial arithmetic in the component.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Asset allocation chart uses AllocationChart with algorithmic colorFn and labelFn
 The dashboard SHALL render the asset allocation breakdown via an `AllocationDimension` entry in `AllocationExplorer`'s `views` array with `key: 'byAssetClass'`, `label: 'Asset Class'`, `title: 'Asset Allocation'`, `data: portfolio.allocations.byAssetClass`, `colorFn` using `holdingColor(idx, total)` by index in `byAssetClass`, and `labelFn` mapping keys via `ASSET_CLASS_LABELS`. The `AllocationChart` component SHALL be invoked by `AllocationExplorer` — not directly by `App.tsx`.

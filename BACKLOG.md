@@ -20,6 +20,7 @@ Features are grouped by epic and tagged with priority:
 | 1.4 | Portfolio value history line chart (1W / 1M / 3M / YTD / 1Y / All) | ✅ Done | Yahoo Finance, Delta |
 | 1.5 | Asset allocation donut chart (stocks, ETFs, crypto, cash) | ✅ Done | Empower, Morningstar |
 | 1.12 | Holdings weight donut chart (per-position allocation %) | ✅ Done | Empower, Morningstar |
+| 1.13 | Unified allocation chart with dimension selector | ✅ Done | — |
 | 1.6 | Sector allocation chart | P1 | Empower, Morningstar, Yahoo Finance |
 | 1.7 | Geographic / regional exposure chart | P2 | Sharesight, Delta, Parqet |
 | 1.8 | Market cap breakdown chart (large / mid / small cap) | P2 | Morningstar |

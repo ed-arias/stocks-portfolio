@@ -340,8 +340,7 @@
 .skeleton-cards    { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
 .skeleton-card     { height: 130px; border-radius: 16px; }
 .skeleton-chart    { height: 320px; border-radius: 16px; }
-.skeleton-alloc          { height: 260px; border-radius: 16px; }
-.skeleton-alloc-holdings { height: 260px; border-radius: 16px; }
+.skeleton-alloc { height: 260px; border-radius: 16px; }
 .skeleton-table    { height: 300px; border-radius: 16px; }
 
 /* ─── Mobile (<900px) ──────────────────────────────────────── */

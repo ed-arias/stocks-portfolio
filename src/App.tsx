@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { useTheme } from './context/ThemeContext'
-import AllocationChart from './features/AllocationChart/AllocationChart'
+import AllocationExplorer from './features/AllocationExplorer/AllocationExplorer'
 import { PortfolioChart } from './features/PortfolioChart/PortfolioChart'
 import { StockService } from './services/StockService'
-import type { AllocationBreakdown, PortfolioSummary } from './types'
+import type { PortfolioSummary } from './types'
 
 const ASSET_CLASS_LABELS: Record<string, string> = {
   stock:  'Stocks',
@@ -71,7 +71,6 @@ function LoadingState({ theme, toggleTheme }: { theme: string; toggleTheme: () =
         </div>
         <div className="skeleton skeleton-chart" />
         <div className="skeleton skeleton-alloc" />
-        <div className="skeleton skeleton-alloc-holdings" />
         <div className="skeleton skeleton-table" />
       </div>
     </div>
@@ -150,29 +149,34 @@ function App() {
         <PortfolioChart />
 
         {portfolio && (
-          <AllocationChart
-            data={portfolio.allocations.byAssetClass}
-            title="Asset Allocation"
-            colorFn={(item: AllocationBreakdown) => {
-              const idx = portfolio.allocations.byAssetClass.findIndex((a) => a.key === item.key)
-              return holdingColor(idx, portfolio.allocations.byAssetClass.length)
-            }}
-            labelFn={(item: AllocationBreakdown) => ASSET_CLASS_LABELS[item.key] ?? item.key}
-          />
-        )}
-
-        {portfolio && (
-          <AllocationChart
-            data={portfolio.allocations.byHolding}
-            title="Holdings Weight"
-            colorFn={(item: AllocationBreakdown) => {
-              const idx = portfolio.allocations.byHolding.findIndex((h) => h.key === item.key)
-              return holdingColor(idx, portfolio.allocations.byHolding.length)
-            }}
-            labelFn={(item: AllocationBreakdown) => {
-              const pos = portfolio.positions.find((p) => p.ticker === item.key)
-              return pos ? `${item.key} · ${pos.companyName}` : item.key
-            }}
+          <AllocationExplorer
+            views={[
+              {
+                key:     'byAssetClass',
+                label:   'Asset Class',
+                title:   'Asset Allocation',
+                data:    portfolio.allocations.byAssetClass,
+                colorFn: (item) => {
+                  const idx = portfolio.allocations.byAssetClass.findIndex((a) => a.key === item.key)
+                  return holdingColor(idx, portfolio.allocations.byAssetClass.length)
+                },
+                labelFn: (item) => ASSET_CLASS_LABELS[item.key] ?? item.key,
+              },
+              {
+                key:     'byHolding',
+                label:   'Holdings',
+                title:   'Holdings Weight',
+                data:    portfolio.allocations.byHolding,
+                colorFn: (item) => {
+                  const idx = portfolio.allocations.byHolding.findIndex((h) => h.key === item.key)
+                  return holdingColor(idx, portfolio.allocations.byHolding.length)
+                },
+                labelFn: (item) => {
+                  const pos = portfolio.positions.find((p) => p.ticker === item.key)
+                  return pos ? `${item.key} · ${pos.companyName}` : item.key
+                },
+              },
+            ]}
           />
         )}
 

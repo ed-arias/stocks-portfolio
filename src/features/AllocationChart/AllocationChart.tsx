@@ -20,13 +20,14 @@ interface TooltipState {
 }
 
 interface Props {
-  data:     AllocationBreakdown[]
-  title:    string
-  colorFn:  (item: AllocationBreakdown) => string
-  labelFn:  (item: AllocationBreakdown) => string
+  data:        AllocationBreakdown[]
+  title:       string
+  colorFn:     (item: AllocationBreakdown) => string
+  labelFn:     (item: AllocationBreakdown) => string
+  standalone?: boolean   // default true — set false to render without card wrapper/title
 }
 
-export default function AllocationChart({ data, title, colorFn, labelFn }: Props) {
+export default function AllocationChart({ data, title, colorFn, labelFn, standalone = true }: Props) {
   const [tooltip,    setTooltip]    = useState<TooltipState | null>(null)
   const [animated,   setAnimated]   = useState(false)
   const [hoveredKey, setHoveredKey] = useState<string | null>(null)
@@ -55,36 +56,14 @@ export default function AllocationChart({ data, title, colorFn, labelFn }: Props
     ]
   }, [])
 
-  return (
+  const body = (
     <div
-      style={{
-        background:   'var(--surface)',
-        border:       '1px solid var(--border)',
-        borderRadius: 16,
-        padding:      '1.5rem',
-        boxShadow:    'var(--shadow-sm)',
-        transition:   'box-shadow 0.2s, transform 0.2s',
-        animation:    'fadeUp var(--anim-duration) var(--anim-ease) calc(var(--anim-stagger) * 3) both',
-        position:     'relative',
-      }}
+      style={{ position: 'relative' }}
       onMouseLeave={() => {
         setTooltip(null)
         setHoveredKey(null)
       }}
     >
-      {/* Card label */}
-      <p style={{
-        fontFamily:    'var(--font-ui)',
-        fontSize:      '0.72rem',
-        fontWeight:    500,
-        textTransform: 'uppercase',
-        letterSpacing: '0.08em',
-        color:         'var(--text-muted)',
-        marginBottom:  '1.5rem',
-      }}>
-        {title}
-      </p>
-
       {/* Body: donut + legend */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
 
@@ -245,6 +224,36 @@ export default function AllocationChart({ data, title, colorFn, labelFn }: Props
           </p>
         </div>
       )}
+    </div>
+  )
+
+  if (!standalone) return body
+
+  return (
+    <div
+      style={{
+        background:   'var(--surface)',
+        border:       '1px solid var(--border)',
+        borderRadius: 16,
+        padding:      '1.5rem',
+        boxShadow:    'var(--shadow-sm)',
+        transition:   'box-shadow 0.2s, transform 0.2s',
+        animation:    'fadeUp var(--anim-duration) var(--anim-ease) calc(var(--anim-stagger) * 3) both',
+      }}
+    >
+      {/* Card label */}
+      <p style={{
+        fontFamily:    'var(--font-ui)',
+        fontSize:      '0.72rem',
+        fontWeight:    500,
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
+        color:         'var(--text-muted)',
+        marginBottom:  '1.5rem',
+      }}>
+        {title}
+      </p>
+      {body}
     </div>
   )
 }

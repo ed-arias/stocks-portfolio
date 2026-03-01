@@ -1,9 +1,4 @@
-# holdings-weight-chart Specification
-
-## Purpose
-Dashboard section that renders an `AllocationChart` instance showing per-position portfolio weight breakdown. Uses the generic `AllocationChart` component with algorithmically assigned pastel HSL colors and a `labelFn` that produces "TICKER · Company Name" labels by looking up positions from `portfolio.positions`.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Holdings weight chart renders per-position allocation breakdown
 The dashboard SHALL render the holdings weight breakdown as an `AllocationDimension` entry in `AllocationExplorer`'s `views` array with `key: 'byHolding'`, `label: 'Holdings'`, `title: 'Holdings Weight'`, and `data: portfolio.allocations.byHolding`. The chart SHALL be visible when the user selects the "Holdings" pill in `AllocationExplorer`.
@@ -28,7 +23,7 @@ Both the asset allocation and holdings weight `AllocationChart` instances SHALL 
 - **THEN** the resulting `hsl` value has saturation ≤ 60% and lightness ≥ 70%
 
 ### Requirement: Holdings weight tooltip shows ticker and company name
-The `labelFn` passed to the holdings weight `AllocationChart` SHALL produce a string of the form `"<TICKER> · <Company Name>"` by looking up the matching `StockPosition` from `portfolio.positions` where `ticker === item.key`. If no match is found, the label SHALL fall back to `item.key`.
+The `labelFn` passed to the holdings weight dimension SHALL produce a string of the form `"<TICKER> · <Company Name>"` by looking up the matching `StockPosition` from `portfolio.positions` where `ticker === item.key`. If no match is found, the label SHALL fall back to `item.key`.
 
 #### Scenario: Tooltip label includes company name
 - **WHEN** the user hovers over a holdings segment whose `key` matches a position's ticker

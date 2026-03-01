@@ -18,11 +18,14 @@ Best practices:
 ## [Unreleased]
 
 ### Added
+- **Unified allocation explorer** (feature 1.13) — collapses the two stacked `AllocationChart` cards into a single card with an iOS-style segmented pill selector; switching between "Asset Class" and "Holdings" replays the donut entry animation via `key`-based remount; adding future allocation dimensions (sector, geography, market cap) requires only appending to the `views` array in `App.tsx` — no component changes needed
+- **`AllocationExplorer` component** (`src/features/AllocationExplorer/AllocationExplorer.tsx`) — dimension-aware wrapper around `AllocationChart`; accepts `views: AllocationDimension[]`; owns active dimension state; renders the segmented pill selector and delegates chart rendering to `AllocationChart`
+- **`AllocationDimension` interface** defined in `AllocationExplorer.tsx` — bundles `key`, `label`, `title`, `data`, `colorFn`, and `labelFn` for each allocation view
 - **Holdings weight donut chart** (feature 1.12) — second `AllocationChart` on the dashboard showing per-position portfolio weight; each segment uses the position's asset class color for visual consistency with the asset allocation chart; tooltip shows ticker, company name, value, and weight %
 - Generic `AllocationChart` component (`src/features/AllocationChart/AllocationChart.tsx`) — replaces `AssetAllocationChart`; accepts `data: AllocationBreakdown[]`, `title`, `colorFn`, and `labelFn` props; all color/label logic is supplied by the caller, enabling any allocation dimension without modifying the component
 - `AllocationBreakdown` interface exported from `src/types/index.ts` — generic allocation type with `key: string`, `value`, `percentage`, and optional `assetClass`
 - `allocations: { byAssetClass, byHolding }` object on `PortfolioSummary` — replaces `assetAllocation`; `byHolding` has one entry per position (key = ticker) pre-computed by the backend
-- Second allocation skeleton block in the loading shimmer for the holdings weight chart
+- ~~Second allocation skeleton block in the loading shimmer for the holdings weight chart~~ — merged into single explorer skeleton (see feature 1.13)
 - Asset allocation donut chart on the dashboard (between history chart and holdings table) showing portfolio breakdown by asset class (Stocks, ETFs, Crypto, Cash) with hover tooltips and a color-coded legend
 - `AssetClass` union type exported from `src/types/index.ts`
 - `assetClass` field on `StockPosition` — assigned by backend
