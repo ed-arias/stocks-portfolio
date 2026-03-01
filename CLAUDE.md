@@ -31,6 +31,14 @@ After implementing any new feature, always update `CHANGELOG.md` under `## [Unre
 
 When building or redesigning any UI component, page, or visual feature, always use the `/frontend-design` skill instead of writing plain markup directly. It commits to a bold aesthetic direction before coding and produces distinctive, production-grade interfaces — avoiding generic patterns, overused fonts, and cookie-cutter layouts.
 
+## Git Workflow
+
+After a feature is archived, create a logical git commit covering all changes introduced by that feature (source files, styles, types, services, docs, changelog). Then ask for permission before pushing to remote.
+
+## Backend API Contract
+
+The `README.md` Backend API Contract section must be updated whenever a new feature requires new data or new endpoints. Do not implement a feature that needs backend data without first documenting the endpoint shape, query parameters, and TypeScript types in `README.md`.
+
 ## OpenSpec
 
 Feature proposals and completed change archives live in `openspec/`. Completed changes are in `openspec/changes/archive/` using the `DDMMYYYY-feature-name` naming convention. Use `/opsx:propose` to start a new change.
