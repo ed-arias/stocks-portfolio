@@ -36,6 +36,7 @@ Features are grouped by epic and tagged with priority:
 | 2.1 | Holdings list with ticker, shares, current price, market value | ✅ Done | All |
 | 2.2 | Per-holding unrealized gain/loss (absolute + %) | ✅ Done | All |
 | 2.3 | Per-holding daily change (absolute + %) | P0 | All |
+| 2.4 | Per-holding portfolio weight (%) | ~~superseded by 1.12~~ | Empower, Morningstar |
 | 2.5 | Per-holding average cost / cost basis | ✅ Done | All |
 | 2.6 | Per-holding dividend yield | P1 | Sharesight, Stock Events, Parqet |
 | 2.7 | Per-holding total return including dividends | P1 | Sharesight |
