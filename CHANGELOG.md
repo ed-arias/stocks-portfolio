@@ -18,6 +18,7 @@ Best practices:
 ## [Unreleased]
 
 ### Added
+- **Per-holding dividend yield column** (feature 2.6) — new "Div. Yield" column in the holdings table displaying annual dividend yield % per position; non-dividend-paying assets (e.g., crypto, TSLA) render "—"; `dividendYield: number` added to `StockPosition` and pre-computed by the service layer
 - **Per-holding daily change column** (feature 2.3) — new "Daily Change" column in the holdings table showing `dailyChange` (absolute, currency) and `dailyChangePercentage` (%) stacked vertically, color-coded green/red; reuses the existing `.pl-cell` / `.pl-pct` layout; no new data required as both fields are already on `StockPosition`
 - **Unified allocation explorer** (feature 1.13) — collapses the two stacked `AllocationChart` cards into a single card with an iOS-style segmented pill selector; switching between "Asset Class" and "Holdings" replays the donut entry animation via `key`-based remount; adding future allocation dimensions (sector, geography, market cap) requires only appending to the `views` array in `App.tsx` — no component changes needed
 - **`AllocationExplorer` component** (`src/features/AllocationExplorer/AllocationExplorer.tsx`) — dimension-aware wrapper around `AllocationChart`; accepts `views: AllocationDimension[]`; owns active dimension state; renders the segmented pill selector and delegates chart rendering to `AllocationChart`

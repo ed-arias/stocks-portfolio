@@ -28,6 +28,7 @@ export interface StockPosition {
   unrealizedGainPercentage: number;
   dailyChange: number;
   dailyChangePercentage: number;
+  dividendYield: number;
 }
 
 export interface PortfolioSummary {

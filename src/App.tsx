@@ -99,6 +99,9 @@ function App() {
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val)
 
+  const formatPercentage = (val: number, decimals = 2) =>
+    `${val.toFixed(decimals)}%`
+
   if (loading) {
     return <LoadingState theme={theme} toggleTheme={toggleTheme} />
   }
@@ -198,6 +201,7 @@ function App() {
                   <th>Total Value</th>
                   <th>Daily Change</th>
                   <th>Profit / Loss</th>
+                  <th>Div. Yield</th>
                 </tr>
               </thead>
               <tbody>
@@ -223,6 +227,7 @@ function App() {
                         <span className="pl-pct">{pos.unrealizedGainPercentage.toFixed(2)}%</span>
                       </div>
                     </td>
+                    <td>{pos.dividendYield > 0 ? formatPercentage(pos.dividendYield) : '—'}</td>
                   </tr>
                 ))}
               </tbody>

@@ -66,6 +66,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     unrealizedGainPercentage: 23.95,
     dailyChange: 18.50,
     dailyChangePercentage: 1.00,
+    dividendYield: 0.44,
   },
   {
     id: '2',
@@ -81,6 +82,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     unrealizedGainPercentage: -1.21,
     dailyChange: -6.20,
     dailyChangePercentage: -0.63,
+    dividendYield: 0,
   },
   {
     id: '3',
@@ -96,6 +98,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     unrealizedGainPercentage: 61.36,
     dailyChange: 312.45,
     dailyChangePercentage: 2.95,
+    dividendYield: 0.03,
   },
   {
     id: '4',
@@ -111,6 +114,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     unrealizedGainPercentage: 30.34,
     dailyChange: 127.43,
     dailyChangePercentage: 4.11,
+    dividendYield: 0.72,
   },
   {
     id: '5',
@@ -126,6 +130,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     unrealizedGainPercentage: 5.26,
     dailyChange: 120.00,
     dailyChangePercentage: 1.52,
+    dividendYield: 1.40,
   },
   {
     id: '6',
@@ -141,6 +146,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     unrealizedGainPercentage: 16.80,
     dailyChange: -87.60,
     dailyChangePercentage: -2.91,
+    dividendYield: 0,
   },
 ];
 
