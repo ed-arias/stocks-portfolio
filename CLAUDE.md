@@ -35,11 +35,23 @@ When building or redesigning any UI component, page, or visual feature, always u
 
 After a feature is archived, create a logical git commit covering all changes introduced by that feature (source files, styles, types, services, docs, changelog). Then ask for permission before pushing to remote.
 
-Before committing an archived feature, always revise `README.md` to reflect any new features, changed UI, or updated capabilities introduced by that feature.
+Before committing an archived feature, review and update the following docs as needed:
+
+| File | Update when |
+|---|---|
+| `CHANGELOG.md` | Always — add an entry under `## [Unreleased]` for every feature |
+| `README.md` | A user-visible capability was added, changed, or removed |
+| `BACKEND.md` | `StockPosition`, `PortfolioSummary`, or any service method changed; a new backend requirement was identified |
 
 ## Backend API Contract
 
-`BACKEND.md` is the source of truth for the API contract, backend requirements, and planned infrastructure. Whenever a new feature adds fields to `StockPosition`, `PortfolioSummary`, or requires new endpoints, update the types and response examples in `BACKEND.md`. Do not implement a feature that needs backend data without first documenting the endpoint shape, query parameters, and TypeScript types there.
+`BACKEND.md` is the source of truth for the API contract, backend requirements, and planned infrastructure. Update it when any of the following occur:
+
+- A field is added to `StockPosition` or `PortfolioSummary` → update the TypeScript types block and JSON response example in the API Contract section
+- A new `StockService` method is introduced → document the endpoint shape, query parameters, and response type
+- A new backend infrastructure requirement is identified (auth, preferences, market data, etc.) → add a row to the relevant domain table
+
+Do not implement a feature that requires new backend data without first documenting it in `BACKEND.md`.
 
 ## OpenSpec
 
