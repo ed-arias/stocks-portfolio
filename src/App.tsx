@@ -4,7 +4,7 @@ import { useTheme } from './context/ThemeContext'
 import AllocationExplorer from './features/AllocationExplorer/AllocationExplorer'
 import { PortfolioChart } from './features/PortfolioChart/PortfolioChart'
 import { StockService } from './services/StockService'
-import type { PortfolioSummary, StockPosition } from './types'
+import type { PortfolioSummary, StockPosition, Transaction } from './types'
 
 type ColumnId = 'shares' | 'avgCost' | 'price' | 'marketValue' | 'dailyChange' | 'unrealizedGain' | 'totalReturn' | 'dividendYield'
 type SortKey = ColumnId | 'ticker'
@@ -59,6 +59,79 @@ const ASSET_CLASS_LABELS: Record<string, string> = {
 
 const holdingColor = (idx: number, total: number) =>
   `hsl(${Math.round((idx / total) * 360)}, 55%, 75%)`
+
+function TransactionModal({ position, onClose }: { position: StockPosition; onClose: () => void }) {
+  const fmt = (val: number) =>
+    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val)
+
+  const fmtDate = (iso: string) =>
+    new Date(iso + 'T00:00:00').toLocaleDateString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric',
+    })
+
+  const sorted = [...position.transactions].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  )
+
+  const typeLabel: Record<Transaction['type'], string> = {
+    buy: 'Buy', sell: 'Sell', dividend: 'Dividend', split: 'Split',
+  }
+
+  return (
+    <div className="txn-overlay" onClick={onClose}>
+      <div className="txn-panel" onClick={e => e.stopPropagation()}>
+        <div className="txn-header">
+          <div className="txn-header-info">
+            <span className="txn-ticker">{position.ticker}</span>
+            <span className="txn-company">{position.companyName}</span>
+          </div>
+          <button className="txn-close" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+        <div className="txn-rule" />
+        <div className="txn-body">
+          {sorted.length === 0 ? (
+            <p className="txn-empty">No transactions recorded for this position.</p>
+          ) : (
+            <table className="txn-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Shares</th>
+                  <th>Price / Share</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sorted.map(txn => (
+                  <tr key={txn.id} className="txn-row">
+                    <td className="txn-date">{fmtDate(txn.date)}</td>
+                    <td className="txn-badge-cell">
+                      <span className={`txn-badge txn-badge--${txn.type}`}>
+                        {typeLabel[txn.type]}
+                      </span>
+                    </td>
+                    <td className="txn-num">
+                      {txn.type === 'split'
+                        ? `${txn.shares}:1`
+                        : txn.shares !== null ? txn.shares : '—'}
+                    </td>
+                    <td className="txn-num">
+                      {txn.price !== null ? fmt(txn.price) : '—'}
+                    </td>
+                    <td className="txn-num">
+                      {txn.amount !== null ? fmt(txn.amount) : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function SunIcon() {
   return (
@@ -132,6 +205,7 @@ function App() {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
   const [groupBy, setGroupBy] = useState<'assetClass' | null>(null)
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
+  const [selectedPosition, setSelectedPosition] = useState<StockPosition | null>(null)
 
   const toggleGroupCollapse = (key: string) => {
     setCollapsedGroups(prev => {
@@ -190,6 +264,15 @@ function App() {
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [pickerOpen])
+
+  useEffect(() => {
+    if (!selectedPosition) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedPosition(null)
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [selectedPosition])
 
   const sortedPositions = useMemo(() => {
     const positions = portfolio?.positions ?? []
@@ -433,7 +516,7 @@ function App() {
                           {visibleColumns.dividendYield  && <td />}
                         </tr>
                         {!collapsedGroups.has(group.key) && group.positions.map(pos => (
-                          <tr key={pos.id} className="data-row">
+                          <tr key={pos.id} className="data-row" onClick={() => setSelectedPosition(pos)}>
                             <td className="ticker-cell">
                               {pos.ticker}
                               <span className="company-name">{pos.companyName}</span>
@@ -474,7 +557,7 @@ function App() {
                       </Fragment>
                     ))
                   : sortedPositions.map(pos => (
-                      <tr key={pos.id} className="data-row">
+                      <tr key={pos.id} className="data-row" onClick={() => setSelectedPosition(pos)}>
                         <td className="ticker-cell">
                           {pos.ticker}
                           <span className="company-name">{pos.companyName}</span>
@@ -518,6 +601,12 @@ function App() {
           </div>
         </section>
       </main>
+      {selectedPosition && (
+        <TransactionModal
+          position={selectedPosition}
+          onClose={() => setSelectedPosition(null)}
+        />
+      )}
     </div>
   )
 }

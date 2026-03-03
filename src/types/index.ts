@@ -1,5 +1,16 @@
 export type Period = '1W' | '1M' | '3M' | 'YTD' | '1Y' | 'All';
 
+export type TransactionType = 'buy' | 'sell' | 'dividend' | 'split';
+
+export interface Transaction {
+  id: string;
+  date: string;          // ISO 8601
+  type: TransactionType;
+  shares: number | null; // null for dividend
+  price: number | null;  // null for dividend and split
+  amount: number | null; // null for split
+}
+
 export type AssetClass = 'stock' | 'etf' | 'crypto' | 'cash';
 
 export interface AllocationBreakdown {
@@ -31,6 +42,7 @@ export interface StockPosition {
   dividendYield: number;
   totalReturn: number;
   totalReturnPercentage: number;
+  transactions: Transaction[];
 }
 
 export interface PortfolioSummary {

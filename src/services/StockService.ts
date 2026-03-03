@@ -1,4 +1,4 @@
-import type { AllocationBreakdown, Period, PortfolioHistoryPoint, PortfolioSummary, StockPosition } from '../types';
+import type { AllocationBreakdown, Period, PortfolioHistoryPoint, PortfolioSummary, StockPosition, Transaction } from '../types';
 
 // ─── History helpers (run once at module load, not per-call) ──────────────────
 
@@ -51,6 +51,52 @@ const MOCK_HISTORY: Record<Period, PortfolioHistoryPoint[]> = {
   'All': buildHistory('2024-01-01', '2026-02-28', 17_943,    27_891.45, 14, 800),
 };
 
+// ─── Mock transaction data per position ──────────────────────────────────────
+
+const AAPL_TXN: Transaction[] = [
+  { id: 'aapl-1', date: '2023-06-12', type: 'buy',      shares: 10,   price: 150.00, amount: 1500.00 },
+  { id: 'aapl-2', date: '2024-01-18', type: 'buy',      shares: 5,    price: 174.00, amount:  870.00 },
+  { id: 'aapl-3', date: '2024-05-17', type: 'dividend', shares: null, price: null,   amount:    3.65 },
+  { id: 'aapl-4', date: '2024-08-14', type: 'sell',     shares: 5,    price: 228.00, amount: 1140.00 },
+  { id: 'aapl-5', date: '2024-11-15', type: 'dividend', shares: null, price: null,   amount:    2.60 },
+];
+
+const TSLA_TXN: Transaction[] = [
+  { id: 'tsla-1', date: '2023-09-05', type: 'buy',  shares: 8, price: 200.00, amount: 1600.00 },
+  { id: 'tsla-2', date: '2024-03-11', type: 'sell', shares: 3, price: 185.00, amount:  555.00 },
+  { id: 'tsla-3', date: '2024-09-23', type: 'buy',  shares: 3, price: 210.00, amount:  630.00 },
+  { id: 'tsla-4', date: '2025-01-07', type: 'sell', shares: 3, price: 395.00, amount: 1185.00 },
+];
+
+const NVDA_TXN: Transaction[] = [
+  { id: 'nvda-1', date: '2023-04-20', type: 'buy',      shares: 10,  price: 420.00, amount: 4200.00 },
+  { id: 'nvda-2', date: '2024-06-10', type: 'split',    shares: 10,  price: null,   amount: null    }, // 10:1 split
+  { id: 'nvda-3', date: '2024-07-08', type: 'buy',      shares: 5,   price:  97.50, amount:  487.50 },
+  { id: 'nvda-4', date: '2024-09-18', type: 'dividend', shares: null, price: null,  amount:    0.04 },
+];
+
+const MSFT_TXN: Transaction[] = [
+  { id: 'msft-1', date: '2023-01-15', type: 'buy',      shares: 5,    price: 235.00, amount: 1175.00 },
+  { id: 'msft-2', date: '2023-09-20', type: 'dividend', shares: null, price: null,   amount:    7.50 },
+  { id: 'msft-3', date: '2024-03-10', type: 'buy',      shares: 3,    price: 410.00, amount: 1230.00 },
+  { id: 'msft-4', date: '2024-09-18', type: 'dividend', shares: null, price: null,   amount:    9.52 },
+];
+
+const VOO_TXN: Transaction[] = [
+  { id: 'voo-1', date: '2023-03-08', type: 'buy',      shares: 10,   price: 365.00, amount: 3650.00 },
+  { id: 'voo-2', date: '2023-09-26', type: 'dividend', shares: null, price: null,   amount:   72.28 },
+  { id: 'voo-3', date: '2024-01-22', type: 'buy',      shares: 10,   price: 435.00, amount: 4350.00 },
+  { id: 'voo-4', date: '2024-09-26', type: 'dividend', shares: null, price: null,   amount:   84.40 },
+];
+
+const BTC_TXN: Transaction[] = [
+  { id: 'btc-1', date: '2023-11-03', type: 'buy',  shares: 0.10, price: 35000.00, amount: 3500.00 },
+  { id: 'btc-2', date: '2024-03-15', type: 'sell', shares: 0.05, price: 68000.00, amount: 3400.00 },
+  { id: 'btc-3', date: '2024-10-22', type: 'buy',  shares: 0.05, price: 63500.00, amount: 3175.00 },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 const MOCK_POSITIONS: StockPosition[] = [
   {
     id: '1',
@@ -69,6 +115,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     dividendYield: 0.44,
     totalReturn: 392.36,
     totalReturnPercentage: 26.16,
+    transactions: AAPL_TXN,
   },
   {
     id: '2',
@@ -87,6 +134,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     dividendYield: 0,
     totalReturn: -12.10,
     totalReturnPercentage: -1.21,
+    transactions: TSLA_TXN,
   },
   {
     id: '3',
@@ -105,6 +153,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     dividendYield: 0.03,
     totalReturn: 4155.27,
     totalReturnPercentage: 61.56,
+    transactions: NVDA_TXN,
   },
   {
     id: '4',
@@ -123,6 +172,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     dividendYield: 0.72,
     totalReturn: 824.68,
     totalReturnPercentage: 33.25,
+    transactions: MSFT_TXN,
   },
   {
     id: '5',
@@ -141,6 +191,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     dividendYield: 1.40,
     totalReturn: 624.00,
     totalReturnPercentage: 8.21,
+    transactions: VOO_TXN,
   },
   {
     id: '6',
@@ -159,6 +210,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     dividendYield: 0,
     totalReturn: 419.92,
     totalReturnPercentage: 16.80,
+    transactions: BTC_TXN,
   },
 ];
 

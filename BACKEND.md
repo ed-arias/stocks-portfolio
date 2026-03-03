@@ -123,7 +123,11 @@ Returns the full portfolio overview.
       "dailyChangePercentage": 1.00,
       "dividendYield": 0.44,
       "totalReturn": 392.36,
-      "totalReturnPercentage": 26.16
+      "totalReturnPercentage": 26.16,
+      "transactions": [
+        { "id": "aapl-1", "date": "2023-06-12", "type": "buy",      "shares": 10,   "price": 150.00, "amount": 1500.00 },
+        { "id": "aapl-2", "date": "2024-05-17", "type": "dividend", "shares": null, "price": null,   "amount":    3.65 }
+      ]
     }
   ],
   "allocations": {
@@ -160,6 +164,17 @@ interface PortfolioSummary {
   };
 }
 
+type TransactionType = 'buy' | 'sell' | 'dividend' | 'split';
+
+interface Transaction {
+  id: string;
+  date: string;          // ISO 8601 date: YYYY-MM-DD
+  type: TransactionType;
+  shares: number | null; // null for dividend; split stores ratio numerator (e.g. 10 for 10:1)
+  price: number | null;  // null for dividend and split
+  amount: number | null; // null for split
+}
+
 interface StockPosition {
   id: string;
   ticker: string;                      // Stock symbol (e.g. "AAPL")
@@ -178,7 +193,12 @@ interface StockPosition {
   dividendYield: number;               // Annual dividend yield % (0 for non-payers)
   totalReturn: number;                 // unrealizedGain + dividends received (USD)
   totalReturnPercentage: number;       // totalReturn / costBasis × 100
+  transactions: Transaction[];         // Full transaction history; pre-populated by backend
 }
+
+// Future endpoint: GET /positions/:id/transactions → Transaction[]
+// Currently embedded in StockPosition to avoid per-holding async loading.
+// Revisit when transaction lists grow large enough to warrant lazy loading.
 
 type AssetClass = 'stock' | 'etf' | 'crypto' | 'cash';
 

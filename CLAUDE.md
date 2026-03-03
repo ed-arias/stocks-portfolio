@@ -42,6 +42,7 @@ Before committing an archived feature, review and update the following docs as n
 | `CHANGELOG.md` | Always — add an entry under `## [Unreleased]` for every feature |
 | `README.md` | A user-visible capability was added, changed, or removed |
 | `BACKEND.md` | `StockPosition`, `PortfolioSummary`, or any service method changed; a new backend requirement was identified |
+| `BACKLOG.md` | Always — mark the implemented feature row `✅ Done` after every feature is complete |
 
 ## Backend API Contract
 
