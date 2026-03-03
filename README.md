@@ -5,7 +5,7 @@ A personal stock portfolio tracker built with React 19 and TypeScript. Visualize
 ## Features
 
 - **Portfolio Dashboard** — total value, daily gain/loss, all-time total return, and allocation charts
-- **Holdings Table** — positions with price, market value, daily change, profit/loss, total return, and dividend yield; columns are individually show/hide via a "Columns" picker with localStorage persistence
+- **Holdings Table** — positions with price, market value, daily change, profit/loss, total return, and dividend yield; columns are individually toggled via a pill-shaped "Columns" picker with iOS-style toggle switches and localStorage persistence
 - **Allocation Explorer** — donut chart with dimension selector (asset class, holdings weight)
 - **Portfolio History Chart** — value over time with 1W / 1M / 3M / YTD / 1Y / All periods
 - **Light / Dark Theming** — instant theme switching via CSS custom properties; dark mode uses a pure black iOS-inspired aesthetic
