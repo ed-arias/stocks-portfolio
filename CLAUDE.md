@@ -35,9 +35,11 @@ When building or redesigning any UI component, page, or visual feature, always u
 
 After a feature is archived, create a logical git commit covering all changes introduced by that feature (source files, styles, types, services, docs, changelog). Then ask for permission before pushing to remote.
 
+Before committing an archived feature, always revise `README.md` to reflect any new features, changed UI, or updated capabilities introduced by that feature.
+
 ## Backend API Contract
 
-The `README.md` Backend API Contract section must be updated whenever a new feature requires new data or new endpoints. Do not implement a feature that needs backend data without first documenting the endpoint shape, query parameters, and TypeScript types in `README.md`.
+`BACKEND.md` is the source of truth for the API contract, backend requirements, and planned infrastructure. Whenever a new feature adds fields to `StockPosition`, `PortfolioSummary`, or requires new endpoints, update the types and response examples in `BACKEND.md`. Do not implement a feature that needs backend data without first documenting the endpoint shape, query parameters, and TypeScript types there.
 
 ## OpenSpec
 

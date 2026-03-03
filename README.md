@@ -1,12 +1,14 @@
 # Stocks Portfolio
 
-A personal stock portfolio tracker built with React 18 and TypeScript. Visualize your holdings, track daily gains and losses, and monitor overall portfolio performance — all with a polished UI that supports both Light and Glassmorphism Dark themes.
+A personal stock portfolio tracker built with React 19 and TypeScript. Visualize your holdings, track daily gains and losses, monitor overall portfolio performance, and analyze asset allocation — all with a polished Apple-inspired UI that supports Light and Dark themes.
 
 ## Features
 
-- **Portfolio Dashboard** — total portfolio value, daily gain/loss with color indicators, and a top holdings summary
-- **Light / Dark Theming** — instant theme switching via CSS custom properties; dark mode uses a Glassmorphism aesthetic
-- **StockService abstraction** — decoupled data layer with mock data, designed for future REST/GraphQL integration
+- **Portfolio Dashboard** — total value, daily gain/loss, all-time total return, and allocation charts
+- **Holdings Table** — positions with price, market value, daily change, profit/loss, total return, and dividend yield; columns are customizable
+- **Allocation Explorer** — donut chart with dimension selector (asset class, holdings weight)
+- **Portfolio History Chart** — value over time with 1W / 1M / 3M / YTD / 1Y / All periods
+- **Light / Dark Theming** — instant theme switching via CSS custom properties; dark mode uses a pure black iOS-inspired aesthetic
 
 ## Tech Stack
 
@@ -14,10 +16,9 @@ A personal stock portfolio tracker built with React 18 and TypeScript. Visualize
 |---|---|
 | Framework | React 19 + TypeScript |
 | Build tool | Vite |
-| Styling | CSS Modules + CSS Custom Properties |
+| Styling | CSS Custom Properties (no CSS-in-JS) |
 | State | React Context API |
 | Linting | ESLint + TypeScript rules |
-| Formatting | Prettier |
 
 ## Getting Started
 
@@ -32,151 +33,25 @@ npm run dev
 npm run build
 ```
 
-## Backend API Contract
+## Backend
 
-The frontend delegates all data fetching to `StockService`, which expects the following backend endpoints:
+The frontend delegates all data fetching to `StockService`, which currently runs against mock data. Swapping to a real backend only requires changing `src/services/StockService.ts` — no component changes needed.
 
-### `GET /portfolio/summary`
-
-Returns the full portfolio overview.
-
-**Response**
-```json
-{
-  "totalValue": 27891.45,
-  "dailyGain": 452.18,
-  "dailyGainPercentage": 1.25,
-  "totalReturn": 5241.53,
-  "totalReturnPercentage": 23.14,
-  "positions": [
-    {
-      "id": "1",
-      "ticker": "AAPL",
-      "companyName": "Apple Inc.",
-      "shares": 10,
-      "avgCost": 150.00,
-      "currentPrice": 185.92,
-      "lastUpdate": "2026-02-28T16:00:00.000Z",
-      "marketValue": 1859.20,
-      "unrealizedGain": 359.20,
-      "unrealizedGainPercentage": 23.95,
-      "dailyChange": 18.50,
-      "dailyChangePercentage": 1.00,
-      "assetClass": "stock"
-    }
-  ],
-  "allocations": {
-    "byAssetClass": [
-      { "key": "stock",  "value": 16971.53, "percentage": 60.85 },
-      { "key": "etf",    "value":  8000.00, "percentage": 28.68 },
-      { "key": "crypto", "value":  2919.92, "percentage": 10.47 }
-    ],
-    "byHolding": [
-      { "key": "AAPL", "value":  1859.20, "percentage":  6.67 },
-      { "key": "TSLA", "value":   987.90, "percentage":  3.54 },
-      { "key": "NVDA", "value": 10891.95, "percentage": 39.05 },
-      { "key": "MSFT", "value":  3232.48, "percentage": 11.59 },
-      { "key": "VOO",  "value":  8000.00, "percentage": 28.68 },
-      { "key": "BTC",  "value":  2919.92, "percentage": 10.47 }
-    ]
-  }
-}
-```
-
-**Types**
-
-```typescript
-interface PortfolioSummary {
-  totalValue: number;            // Total market value of all positions
-  dailyGain: number;             // Absolute daily gain/loss in USD
-  dailyGainPercentage: number;   // Daily gain/loss as a percentage
-  totalReturn: number;           // All-time absolute gain/loss in USD
-  totalReturnPercentage: number; // All-time return as a percentage
-  positions: StockPosition[];
-  allocations: {
-    byAssetClass: AllocationBreakdown[]; // Grouped by asset class
-    byHolding: AllocationBreakdown[];    // One entry per position (key === ticker)
-  };
-}
-
-interface StockPosition {
-  id: string;
-  ticker: string;                      // Stock symbol (e.g. "AAPL")
-  companyName: string;
-  shares: number;
-  avgCost: number;                     // Average cost basis per share in USD
-  currentPrice: number;                // Latest market price per share in USD
-  lastUpdate: string;                  // ISO 8601 timestamp
-  assetClass: AssetClass;              // Asset class assigned by backend
-  // Pre-computed by backend
-  marketValue: number;                 // shares × currentPrice
-  unrealizedGain: number;              // marketValue − (shares × avgCost)
-  unrealizedGainPercentage: number;    // unrealizedGain / costBasis × 100
-  dailyChange: number;                 // Absolute $ change today for this position
-  dailyChangePercentage: number;       // % change today for this position
-}
-
-type AssetClass = 'stock' | 'etf' | 'crypto' | 'cash';
-
-interface AllocationBreakdown {
-  key: string;        // Dimension-specific identifier: asset class key, ticker, sector, etc.
-  value: number;      // Total market value in USD
-  percentage: number; // Portfolio weight (0–100); pre-computed by backend
-}
-```
-
-### `GET /portfolio/history`
-
-Returns portfolio total value over time for a given period.
-
-**Query Parameters**
-
-| Parameter | Type | Values |
-|---|---|---|
-| `period` | string | `1W` `1M` `3M` `YTD` `1Y` `All` |
-
-**Period reference**
-
-| Period | Granularity | Approx. points | Coverage |
-|---|---|---|---|
-| `1W` | Daily (trading days only) | ~5 | Last 7 calendar days |
-| `1M` | Daily (trading days only) | ~21 | Last 30 calendar days |
-| `3M` | Daily (trading days only) | ~65 | Last 90 calendar days |
-| `YTD` | Daily (trading days only) | ~40 | Jan 1 to present |
-| `1Y` | Weekly (every 7 days) | ~52 | Last 12 months |
-| `All` | Bi-weekly (every 14 days) | ~52+ | Full portfolio history |
-
-Weekends and market holidays are excluded from daily-granularity periods. The final data point always reflects the current portfolio `totalValue`.
-
-**Response**
-```json
-[
-  { "date": "2026-02-03", "value": 26512.00 },
-  { "date": "2026-02-04", "value": 26734.45 }
-]
-```
-
-**Types**
-
-```typescript
-type Period = '1W' | '1M' | '3M' | 'YTD' | '1Y' | 'All';
-
-interface PortfolioHistoryPoint {
-  date: string;  // ISO 8601 date: YYYY-MM-DD
-  value: number; // Portfolio total value in USD
-}
-```
-
-> Currently running against mock data in `src/services/StockService.ts`. Swap the implementation to point at a real backend without any component changes.
+Backend requirements, API contract, and planned infrastructure are documented in [`BACKEND.md`](./BACKEND.md).
 
 ## Project Structure
 
 ```
 src/
-  components/   # Reusable UI primitives
-  features/     # Feature-scoped views and logic
+  features/     # Feature-scoped components (charts, table, explorer)
   services/     # Data fetching (StockService)
-  hooks/        # Custom React hooks
-  styles/       # Global styles and CSS variables
+  context/      # React context providers (ThemeContext)
   types/        # Shared TypeScript interfaces
+src/index.css   # CSS custom property token system (light + dark)
+src/App.css     # Layout, card, table, and animation styles
+src/App.tsx     # Main feature component
 ```
+
+## Roadmap
+
+Feature backlog is tracked in [`BACKLOG.md`](./BACKLOG.md).

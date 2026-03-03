@@ -2,6 +2,8 @@
 
 Informed by analysis of the top 10 stock portfolio apps: **Empower, Sharesight, Stock Events, Webull, Yahoo Finance, Morningstar Investor, Seeking Alpha, Portfolio Visualizer, Delta by eToro, and Parqet**.
 
+> **Backend requirements** (auth, data persistence, market data APIs, notifications) are tracked separately in [`BACKEND.md`](./BACKEND.md).
+
 Features are grouped by epic and tagged with priority:
 - `P0` — Core, implement first
 - `P1` — High value, implement next
