@@ -43,7 +43,7 @@ Features are grouped by epic and tagged with priority:
 | 2.5 | Per-holding average cost / cost basis | ✅ Done | All |
 | 2.6 | Per-holding dividend yield | ✅ Done | Sharesight, Stock Events, Parqet |
 | 2.7 | Per-holding total return including dividends | ✅ Done | Sharesight |
-| 2.8 | Customizable columns (user selects visible metrics) | P1 | Seeking Alpha, Yahoo Finance |
+| 2.8 | Customizable columns (user selects visible metrics) | ✅ Done | Seeking Alpha, Yahoo Finance |
 | 2.9 | Sortable columns | P1 | All |
 | 2.10 | Grouping by asset class, sector, or country | P1 | Sharesight, Parqet |
 | 2.11 | Transaction history per holding (buys, sells, dividends) | P1 | Sharesight, Yahoo Finance |
