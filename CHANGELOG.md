@@ -18,6 +18,7 @@ Best practices:
 ## [Unreleased]
 
 ### Added
+- **Sortable holdings table columns** (feature 2.9) — all columns in the holdings table are now clickable to sort; clicking a header cycles through ascending → descending → default order with a ↑/↓ indicator on the active column; sort is session-only (not persisted); hiding the active sort column via the column picker resets sort to default
 - **Customizable holdings table columns** (feature 2.8) — pill-shaped "Columns" button with a grid icon in the holdings header opens an animated popover with iOS-style toggle switches to show/hide any of the 8 optional columns (Ticker is always visible); button turns accent-blue when open; toggle thumb animates with spring easing; preferences persisted to `localStorage` under `holdings-visible-columns` and restored on page load; missing keys default to visible
 - **Per-holding total return column** (feature 2.7) — new "Total Return" column in the holdings table showing total return per position (capital gains + dividends received), stacked currency/percentage with green/red color coding; `totalReturn` and `totalReturnPercentage` added to `StockPosition` and pre-computed by the service layer
 - **Per-holding dividend yield column** (feature 2.6) — new "Div. Yield" column in the holdings table displaying annual dividend yield % per position; non-dividend-paying assets (e.g., crypto, TSLA) render "—"; `dividendYield: number` added to `StockPosition` and pre-computed by the service layer

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { useTheme } from './context/ThemeContext'
 import AllocationExplorer from './features/AllocationExplorer/AllocationExplorer'
@@ -7,6 +7,7 @@ import { StockService } from './services/StockService'
 import type { PortfolioSummary } from './types'
 
 type ColumnId = 'shares' | 'avgCost' | 'price' | 'marketValue' | 'dailyChange' | 'unrealizedGain' | 'totalReturn' | 'dividendYield'
+type SortKey = ColumnId | 'ticker'
 
 const COLUMN_LABELS: Record<ColumnId, string> = {
   shares:        'Shares',
@@ -115,13 +116,31 @@ function App() {
   const [visibleColumns, setVisibleColumns] = useState<Record<ColumnId, boolean>>(loadColumnVisibility)
   const [pickerOpen, setPickerOpen] = useState(false)
   const pickerRef = useRef<HTMLDivElement>(null)
+  const [sortKey, setSortKey] = useState<SortKey | null>(null)
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
   const toggleColumn = (id: ColumnId) => {
+    if (visibleColumns[id] && sortKey === id) {
+      setSortKey(null)
+      setSortDir('asc')
+    }
     setVisibleColumns(prev => {
       const next = { ...prev, [id]: !prev[id] }
       localStorage.setItem('holdings-visible-columns', JSON.stringify(next))
       return next
     })
+  }
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey !== key) {
+      setSortKey(key)
+      setSortDir('asc')
+    } else if (sortDir === 'asc') {
+      setSortDir('desc')
+    } else {
+      setSortKey(null)
+      setSortDir('asc')
+    }
   }
 
   useEffect(() => {
@@ -148,6 +167,23 @@ function App() {
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [pickerOpen])
+
+  const sortedPositions = useMemo(() => {
+    const positions = portfolio?.positions ?? []
+    if (!sortKey) return positions
+    const dir = sortDir === 'asc' ? 1 : -1
+    return [...positions].sort((a, b) => {
+      if (sortKey === 'ticker')        return a.ticker.localeCompare(b.ticker) * dir
+      if (sortKey === 'avgCost')       return (a.avgCost - b.avgCost) * dir
+      if (sortKey === 'price')         return (a.currentPrice - b.currentPrice) * dir
+      if (sortKey === 'marketValue')   return (a.marketValue - b.marketValue) * dir
+      if (sortKey === 'dailyChange')   return (a.dailyChange - b.dailyChange) * dir
+      if (sortKey === 'unrealizedGain') return (a.unrealizedGain - b.unrealizedGain) * dir
+      if (sortKey === 'totalReturn')   return (a.totalReturn - b.totalReturn) * dir
+      if (sortKey === 'dividendYield') return (a.dividendYield - b.dividendYield) * dir
+      return (a.shares - b.shares) * dir // 'shares'
+    })
+  }, [portfolio, sortKey, sortDir])
 
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val)
@@ -282,19 +318,19 @@ function App() {
             <table className="holdings-table">
               <thead>
                 <tr>
-                  <th>Ticker</th>
-                  {visibleColumns.shares         && <th>Shares</th>}
-                  {visibleColumns.avgCost        && <th>Avg Cost</th>}
-                  {visibleColumns.price          && <th>Price</th>}
-                  {visibleColumns.marketValue    && <th>Total Value</th>}
-                  {visibleColumns.dailyChange    && <th>Daily Change</th>}
-                  {visibleColumns.unrealizedGain && <th>Profit / Loss</th>}
-                  {visibleColumns.totalReturn    && <th>Total Return</th>}
-                  {visibleColumns.dividendYield  && <th>Div. Yield</th>}
+                  <th data-sort={sortKey === 'ticker' ? sortDir : 'none'} onClick={() => handleSort('ticker')}>Ticker</th>
+                  {visibleColumns.shares         && <th data-sort={sortKey === 'shares'         ? sortDir : 'none'} onClick={() => handleSort('shares')}>Shares</th>}
+                  {visibleColumns.avgCost        && <th data-sort={sortKey === 'avgCost'        ? sortDir : 'none'} onClick={() => handleSort('avgCost')}>Avg Cost</th>}
+                  {visibleColumns.price          && <th data-sort={sortKey === 'price'          ? sortDir : 'none'} onClick={() => handleSort('price')}>Price</th>}
+                  {visibleColumns.marketValue    && <th data-sort={sortKey === 'marketValue'    ? sortDir : 'none'} onClick={() => handleSort('marketValue')}>Total Value</th>}
+                  {visibleColumns.dailyChange    && <th data-sort={sortKey === 'dailyChange'    ? sortDir : 'none'} onClick={() => handleSort('dailyChange')}>Daily Change</th>}
+                  {visibleColumns.unrealizedGain && <th data-sort={sortKey === 'unrealizedGain' ? sortDir : 'none'} onClick={() => handleSort('unrealizedGain')}>Profit / Loss</th>}
+                  {visibleColumns.totalReturn    && <th data-sort={sortKey === 'totalReturn'    ? sortDir : 'none'} onClick={() => handleSort('totalReturn')}>Total Return</th>}
+                  {visibleColumns.dividendYield  && <th data-sort={sortKey === 'dividendYield'  ? sortDir : 'none'} onClick={() => handleSort('dividendYield')}>Div. Yield</th>}
                 </tr>
               </thead>
               <tbody>
-                {portfolio?.positions.map((pos) => (
+                {sortedPositions.map((pos) => (
                   <tr key={pos.id}>
                     <td className="ticker-cell">
                       {pos.ticker}

@@ -379,6 +379,60 @@
   color: var(--text-muted);
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s, background 0.15s;
+}
+
+/* Sort arrow — CSS triangle, always in the DOM, hidden by default */
+.holdings-table th::after {
+  content: '';
+  display: inline-block;
+  margin-left: 5px;
+  vertical-align: middle;
+  width: 0;
+  height: 0;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-bottom: 4.5px solid currentColor;
+  opacity: 0;
+  transform: translateY(-0.5px);
+  transition:
+    opacity 0.15s,
+    transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Hover: faint arrow hints at sortability */
+.holdings-table th:hover {
+  color: var(--text-secondary);
+}
+
+.holdings-table th:hover::after {
+  opacity: 0.28;
+}
+
+/* Active sort column: accent color + faint tinted background */
+.holdings-table th[data-sort="asc"],
+.holdings-table th[data-sort="desc"] {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+}
+
+/* Arrow fully visible, accent-colored */
+.holdings-table th[data-sort="asc"]::after,
+.holdings-table th[data-sort="desc"]::after {
+  border-bottom-color: var(--accent);
+  opacity: 1;
+}
+
+/* Ascending: triangle points up (default orientation) */
+.holdings-table th[data-sort="asc"]::after {
+  transform: translateY(-0.5px) rotate(0deg);
+}
+
+/* Descending: spring-flip 180° — triangle points down */
+.holdings-table th[data-sort="desc"]::after {
+  transform: translateY(0.5px) rotate(180deg);
 }
 
 .holdings-table th:not(:first-child) {
