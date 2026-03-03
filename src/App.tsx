@@ -201,6 +201,7 @@ function App() {
                   <th>Total Value</th>
                   <th>Daily Change</th>
                   <th>Profit / Loss</th>
+                  <th>Total Return</th>
                   <th>Div. Yield</th>
                 </tr>
               </thead>
@@ -225,6 +226,12 @@ function App() {
                       <div className="pl-cell">
                         <span>{formatCurrency(pos.unrealizedGain)}</span>
                         <span className="pl-pct">{pos.unrealizedGainPercentage.toFixed(2)}%</span>
+                      </div>
+                    </td>
+                    <td className={pos.totalReturn >= 0 ? 'positive' : 'negative'}>
+                      <div className="pl-cell">
+                        <span>{formatCurrency(pos.totalReturn)}</span>
+                        <span className="pl-pct">{pos.totalReturnPercentage.toFixed(2)}%</span>
                       </div>
                     </td>
                     <td>{pos.dividendYield > 0 ? formatPercentage(pos.dividendYield) : '—'}</td>

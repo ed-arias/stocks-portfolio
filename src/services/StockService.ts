@@ -67,6 +67,8 @@ const MOCK_POSITIONS: StockPosition[] = [
     dailyChange: 18.50,
     dailyChangePercentage: 1.00,
     dividendYield: 0.44,
+    totalReturn: 392.36,
+    totalReturnPercentage: 26.16,
   },
   {
     id: '2',
@@ -83,6 +85,8 @@ const MOCK_POSITIONS: StockPosition[] = [
     dailyChange: -6.20,
     dailyChangePercentage: -0.63,
     dividendYield: 0,
+    totalReturn: -12.10,
+    totalReturnPercentage: -1.21,
   },
   {
     id: '3',
@@ -99,6 +103,8 @@ const MOCK_POSITIONS: StockPosition[] = [
     dailyChange: 312.45,
     dailyChangePercentage: 2.95,
     dividendYield: 0.03,
+    totalReturn: 4155.27,
+    totalReturnPercentage: 61.56,
   },
   {
     id: '4',
@@ -115,6 +121,8 @@ const MOCK_POSITIONS: StockPosition[] = [
     dailyChange: 127.43,
     dailyChangePercentage: 4.11,
     dividendYield: 0.72,
+    totalReturn: 824.68,
+    totalReturnPercentage: 33.25,
   },
   {
     id: '5',
@@ -131,6 +139,8 @@ const MOCK_POSITIONS: StockPosition[] = [
     dailyChange: 120.00,
     dailyChangePercentage: 1.52,
     dividendYield: 1.40,
+    totalReturn: 624.00,
+    totalReturnPercentage: 8.21,
   },
   {
     id: '6',
@@ -147,6 +157,8 @@ const MOCK_POSITIONS: StockPosition[] = [
     dailyChange: -87.60,
     dailyChangePercentage: -2.91,
     dividendYield: 0,
+    totalReturn: 419.92,
+    totalReturnPercentage: 16.80,
   },
 ];
 

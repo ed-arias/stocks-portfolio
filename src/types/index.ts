@@ -29,6 +29,8 @@ export interface StockPosition {
   dailyChange: number;
   dailyChangePercentage: number;
   dividendYield: number;
+  totalReturn: number;
+  totalReturnPercentage: number;
 }
 
 export interface PortfolioSummary {
