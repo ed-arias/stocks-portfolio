@@ -248,19 +248,29 @@ function App() {
                 className="col-picker-btn"
                 onClick={() => setPickerOpen(o => !o)}
                 aria-expanded={pickerOpen}
+                aria-label="Toggle column visibility"
               >
-                Columns ⌄
+                <svg className="col-picker-icon" viewBox="0 0 16 16" aria-hidden="true">
+                  <rect x="1"  y="2" width="4" height="12" rx="1.5" />
+                  <rect x="6"  y="2" width="4" height="12" rx="1.5" />
+                  <rect x="11" y="2" width="4" height="12" rx="1.5" />
+                </svg>
+                Columns
               </button>
               {pickerOpen && (
                 <div className="col-picker-dropdown">
+                  <p className="col-picker-heading">Visible Columns</p>
                   {ALL_COLUMNS.map(id => (
                     <label key={id} className="col-picker-item">
-                      <input
-                        type="checkbox"
-                        checked={visibleColumns[id]}
-                        onChange={() => toggleColumn(id)}
-                      />
-                      {COLUMN_LABELS[id]}
+                      <span className="col-picker-label">{COLUMN_LABELS[id]}</span>
+                      <span className="col-toggle">
+                        <input
+                          type="checkbox"
+                          checked={visibleColumns[id]}
+                          onChange={() => toggleColumn(id)}
+                        />
+                        <span className="col-toggle-slider" />
+                      </span>
                     </label>
                   ))}
                 </div>

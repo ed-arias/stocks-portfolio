@@ -204,17 +204,20 @@
 }
 
 .col-picker-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   font-family: var(--font-ui);
   font-size: 0.72rem;
   font-weight: 500;
   color: var(--text-secondary);
   background: var(--bg-subtle);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  padding: 0.25rem 0.65rem 0.25rem 0.5rem;
   cursor: pointer;
   letter-spacing: 0.01em;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .col-picker-btn:hover {
@@ -222,40 +225,116 @@
   color: var(--text-primary);
 }
 
+.col-picker-btn[aria-expanded="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.col-picker-icon {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+@keyframes pickerIn {
+  from { opacity: 0; transform: scale(0.96) translateY(-6px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
 .col-picker-dropdown {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 8px);
   right: 0;
   z-index: 100;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 0.5rem 0;
-  min-width: 160px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  padding: 0.4rem 0 0.5rem;
+  min-width: 192px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.08);
+  transform-origin: top right;
+  animation: pickerIn 0.18s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.col-picker-heading {
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0.3rem 1rem 0.5rem;
+  margin: 0;
+  border-bottom: 1px solid var(--border);
 }
 
 .col-picker-item {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.4rem 0.9rem;
-  font-family: var(--font-ui);
-  font-size: 0.8rem;
-  color: var(--text-primary);
+  justify-content: space-between;
+  padding: 0.45rem 1rem;
   cursor: pointer;
   user-select: none;
+  transition: background 0.1s;
 }
 
 .col-picker-item:hover {
   background: var(--bg-subtle);
 }
 
-.col-picker-item input[type="checkbox"] {
-  accent-color: var(--accent);
-  width: 14px;
-  height: 14px;
+.col-picker-label {
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 450;
+  color: var(--text-primary);
+}
+
+/* ── iOS-style toggle switch ── */
+.col-toggle {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.col-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.col-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 20px;
+  transition: background 0.2s;
   cursor: pointer;
+}
+
+.col-toggle-slider::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.col-toggle input:checked + .col-toggle-slider {
+  background: var(--accent);
+}
+
+.col-toggle input:checked + .col-toggle-slider::before {
+  transform: translateX(14px);
 }
 
 .section-title {
