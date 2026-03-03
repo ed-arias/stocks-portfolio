@@ -1,13 +1,25 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { useTheme } from './context/ThemeContext'
 import AllocationExplorer from './features/AllocationExplorer/AllocationExplorer'
 import { PortfolioChart } from './features/PortfolioChart/PortfolioChart'
 import { StockService } from './services/StockService'
-import type { PortfolioSummary } from './types'
+import type { PortfolioSummary, StockPosition } from './types'
 
 type ColumnId = 'shares' | 'avgCost' | 'price' | 'marketValue' | 'dailyChange' | 'unrealizedGain' | 'totalReturn' | 'dividendYield'
 type SortKey = ColumnId | 'ticker'
+
+type PositionGroup = {
+  key: string
+  label: string
+  positions: StockPosition[]
+  totalValue: number
+  dailyChange: number
+  unrealizedGain: number
+  totalReturn: number
+}
+
+const ASSET_CLASS_ORDER = ['stock', 'etf', 'crypto', 'cash'] as const
 
 const COLUMN_LABELS: Record<ColumnId, string> = {
   shares:        'Shares',
@@ -118,6 +130,17 @@ function App() {
   const pickerRef = useRef<HTMLDivElement>(null)
   const [sortKey, setSortKey] = useState<SortKey | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+  const [groupBy, setGroupBy] = useState<'assetClass' | null>(null)
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
+
+  const toggleGroupCollapse = (key: string) => {
+    setCollapsedGroups(prev => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
 
   const toggleColumn = (id: ColumnId) => {
     if (visibleColumns[id] && sortKey === id) {
@@ -184,6 +207,29 @@ function App() {
       return (a.shares - b.shares) * dir // 'shares'
     })
   }, [portfolio, sortKey, sortDir])
+
+  const groupedPositions = useMemo((): PositionGroup[] => {
+    if (!groupBy) return []
+    const buckets = new Map<string, StockPosition[]>()
+    for (const pos of sortedPositions) {
+      if (!buckets.has(pos.assetClass)) buckets.set(pos.assetClass, [])
+      buckets.get(pos.assetClass)!.push(pos)
+    }
+    return ASSET_CLASS_ORDER
+      .filter(key => buckets.has(key))
+      .map(key => {
+        const positions = buckets.get(key)!
+        return {
+          key,
+          label: ASSET_CLASS_LABELS[key] ?? key,
+          positions,
+          totalValue:     positions.reduce((s, p) => s + p.marketValue, 0),
+          dailyChange:    positions.reduce((s, p) => s + p.dailyChange, 0),
+          unrealizedGain: positions.reduce((s, p) => s + p.unrealizedGain, 0),
+          totalReturn:    positions.reduce((s, p) => s + p.totalReturn, 0),
+        }
+      })
+  }, [sortedPositions, groupBy])
 
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val)
@@ -279,6 +325,23 @@ function App() {
               <h2 className="section-title">Holdings</h2>
               <span className="section-count">{portfolio?.positions.length ?? 0} positions</span>
             </div>
+            <div className="section-header-right">
+            <button
+              className={`col-picker-btn${groupBy ? ' col-picker-btn--active' : ''}`}
+              onClick={() => {
+                if (groupBy) { setGroupBy(null); setCollapsedGroups(new Set()) }
+                else setGroupBy('assetClass')
+              }}
+              aria-pressed={groupBy !== null}
+              aria-label="Toggle grouping by asset class"
+            >
+              <svg className="col-picker-icon" viewBox="0 0 16 16" aria-hidden="true">
+                <rect x="1" y="2"   width="14" height="2.5" rx="1" />
+                <rect x="3" y="6.5" width="11" height="2"   rx="1" />
+                <rect x="3" y="10.5" width="11" height="2"  rx="1" />
+              </svg>
+              Group
+            </button>
             <div className="col-picker-wrap" ref={pickerRef}>
               <button
                 className="col-picker-btn"
@@ -312,6 +375,7 @@ function App() {
                 </div>
               )}
             </div>
+            </div>{/* end section-header-right */}
           </div>
 
           <div className="table-scroll">
@@ -330,45 +394,125 @@ function App() {
                 </tr>
               </thead>
               <tbody>
-                {sortedPositions.map((pos) => (
-                  <tr key={pos.id}>
-                    <td className="ticker-cell">
-                      {pos.ticker}
-                      <span className="company-name">{pos.companyName}</span>
-                    </td>
-                    {visibleColumns.shares         && <td>{pos.shares}</td>}
-                    {visibleColumns.avgCost        && <td>{formatCurrency(pos.avgCost)}</td>}
-                    {visibleColumns.price          && <td>{formatCurrency(pos.currentPrice)}</td>}
-                    {visibleColumns.marketValue    && <td>{formatCurrency(pos.marketValue)}</td>}
-                    {visibleColumns.dailyChange    && (
-                      <td className={pos.dailyChange >= 0 ? 'positive' : 'negative'}>
-                        <div className="pl-cell">
-                          <span>{formatCurrency(pos.dailyChange)}</span>
-                          <span className="pl-pct">{pos.dailyChangePercentage.toFixed(2)}%</span>
-                        </div>
-                      </td>
-                    )}
-                    {visibleColumns.unrealizedGain && (
-                      <td className={pos.unrealizedGain >= 0 ? 'positive' : 'negative'}>
-                        <div className="pl-cell">
-                          <span>{formatCurrency(pos.unrealizedGain)}</span>
-                          <span className="pl-pct">{pos.unrealizedGainPercentage.toFixed(2)}%</span>
-                        </div>
-                      </td>
-                    )}
-                    {visibleColumns.totalReturn    && (
-                      <td className={pos.totalReturn >= 0 ? 'positive' : 'negative'}>
-                        <div className="pl-cell">
-                          <span>{formatCurrency(pos.totalReturn)}</span>
-                          <span className="pl-pct">{pos.totalReturnPercentage.toFixed(2)}%</span>
-                        </div>
-                      </td>
-                    )}
-                    {visibleColumns.dividendYield  && (
-                      <td>{pos.dividendYield > 0 ? formatPercentage(pos.dividendYield) : '—'}</td>
-                    )}
-                  </tr>
-                ))}
+                {groupBy === 'assetClass'
+                  ? groupedPositions.map(group => (
+                      <Fragment key={group.key}>
+                        <tr className="group-header-row" onClick={() => toggleGroupCollapse(group.key)}>
+                          <td>
+                            <div className="group-header-content">
+                              <span className={`group-chevron${collapsedGroups.has(group.key) ? '' : ' expanded'}`}>›</span>
+                              <span className="group-label">{group.label}</span>
+                              <span className="group-count">{group.positions.length}</span>
+                            </div>
+                          </td>
+                          {visibleColumns.shares         && <td />}
+                          {visibleColumns.avgCost        && <td />}
+                          {visibleColumns.price          && <td />}
+                          {visibleColumns.marketValue    && <td className="group-cell--value">{formatCurrency(group.totalValue)}</td>}
+                          {visibleColumns.dailyChange    && (
+                            <td className={`group-cell--daily ${group.dailyChange >= 0 ? 'positive' : 'negative'}`}>
+                              <div className="pl-cell">
+                                <span>{group.dailyChange >= 0 ? '+' : ''}{formatCurrency(group.dailyChange)}</span>
+                              </div>
+                            </td>
+                          )}
+                          {visibleColumns.unrealizedGain && (
+                            <td className={`group-cell--daily ${group.unrealizedGain >= 0 ? 'positive' : 'negative'}`}>
+                              <div className="pl-cell">
+                                <span>{group.unrealizedGain >= 0 ? '+' : ''}{formatCurrency(group.unrealizedGain)}</span>
+                              </div>
+                            </td>
+                          )}
+                          {visibleColumns.totalReturn    && (
+                            <td className={`group-cell--daily ${group.totalReturn >= 0 ? 'positive' : 'negative'}`}>
+                              <div className="pl-cell">
+                                <span>{group.totalReturn >= 0 ? '+' : ''}{formatCurrency(group.totalReturn)}</span>
+                              </div>
+                            </td>
+                          )}
+                          {visibleColumns.dividendYield  && <td />}
+                        </tr>
+                        {!collapsedGroups.has(group.key) && group.positions.map(pos => (
+                          <tr key={pos.id} className="data-row">
+                            <td className="ticker-cell">
+                              {pos.ticker}
+                              <span className="company-name">{pos.companyName}</span>
+                            </td>
+                            {visibleColumns.shares         && <td>{pos.shares}</td>}
+                            {visibleColumns.avgCost        && <td>{formatCurrency(pos.avgCost)}</td>}
+                            {visibleColumns.price          && <td>{formatCurrency(pos.currentPrice)}</td>}
+                            {visibleColumns.marketValue    && <td>{formatCurrency(pos.marketValue)}</td>}
+                            {visibleColumns.dailyChange    && (
+                              <td className={pos.dailyChange >= 0 ? 'positive' : 'negative'}>
+                                <div className="pl-cell">
+                                  <span>{formatCurrency(pos.dailyChange)}</span>
+                                  <span className="pl-pct">{pos.dailyChangePercentage.toFixed(2)}%</span>
+                                </div>
+                              </td>
+                            )}
+                            {visibleColumns.unrealizedGain && (
+                              <td className={pos.unrealizedGain >= 0 ? 'positive' : 'negative'}>
+                                <div className="pl-cell">
+                                  <span>{formatCurrency(pos.unrealizedGain)}</span>
+                                  <span className="pl-pct">{pos.unrealizedGainPercentage.toFixed(2)}%</span>
+                                </div>
+                              </td>
+                            )}
+                            {visibleColumns.totalReturn    && (
+                              <td className={pos.totalReturn >= 0 ? 'positive' : 'negative'}>
+                                <div className="pl-cell">
+                                  <span>{formatCurrency(pos.totalReturn)}</span>
+                                  <span className="pl-pct">{pos.totalReturnPercentage.toFixed(2)}%</span>
+                                </div>
+                              </td>
+                            )}
+                            {visibleColumns.dividendYield  && (
+                              <td>{pos.dividendYield > 0 ? formatPercentage(pos.dividendYield) : '—'}</td>
+                            )}
+                          </tr>
+                        ))}
+                      </Fragment>
+                    ))
+                  : sortedPositions.map(pos => (
+                      <tr key={pos.id} className="data-row">
+                        <td className="ticker-cell">
+                          {pos.ticker}
+                          <span className="company-name">{pos.companyName}</span>
+                        </td>
+                        {visibleColumns.shares         && <td>{pos.shares}</td>}
+                        {visibleColumns.avgCost        && <td>{formatCurrency(pos.avgCost)}</td>}
+                        {visibleColumns.price          && <td>{formatCurrency(pos.currentPrice)}</td>}
+                        {visibleColumns.marketValue    && <td>{formatCurrency(pos.marketValue)}</td>}
+                        {visibleColumns.dailyChange    && (
+                          <td className={pos.dailyChange >= 0 ? 'positive' : 'negative'}>
+                            <div className="pl-cell">
+                              <span>{formatCurrency(pos.dailyChange)}</span>
+                              <span className="pl-pct">{pos.dailyChangePercentage.toFixed(2)}%</span>
+                            </div>
+                          </td>
+                        )}
+                        {visibleColumns.unrealizedGain && (
+                          <td className={pos.unrealizedGain >= 0 ? 'positive' : 'negative'}>
+                            <div className="pl-cell">
+                              <span>{formatCurrency(pos.unrealizedGain)}</span>
+                              <span className="pl-pct">{pos.unrealizedGainPercentage.toFixed(2)}%</span>
+                            </div>
+                          </td>
+                        )}
+                        {visibleColumns.totalReturn    && (
+                          <td className={pos.totalReturn >= 0 ? 'positive' : 'negative'}>
+                            <div className="pl-cell">
+                              <span>{formatCurrency(pos.totalReturn)}</span>
+                              <span className="pl-pct">{pos.totalReturnPercentage.toFixed(2)}%</span>
+                            </div>
+                          </td>
+                        )}
+                        {visibleColumns.dividendYield  && (
+                          <td>{pos.dividendYield > 0 ? formatPercentage(pos.dividendYield) : '—'}</td>
+                        )}
+                      </tr>
+                    ))
+                }
               </tbody>
             </table>
           </div>
