@@ -865,114 +865,100 @@
   text-align: right;
 }
 
-/* ─── Closed Positions Section ──────────────────────────────── */
 
-.closed-section {
-  margin-top: 0;
+/* ─── Holdings Tab Bar ───────────────────────────────────────── */
+
+.holdings-tab-bar {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--border);
+  padding: 0 4px;
+  gap: 2px;
+  background: var(--surface);
 }
 
-.closed-toggle {
+.holdings-tab {
   display: flex;
   align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 13px 0;
-  background: none;
-  border: none;
-  border-top: 1px dashed var(--border);
-  cursor: pointer;
-  text-align: left;
-  transition: opacity 0.15s ease;
-}
-.closed-toggle:hover {
-  opacity: 0.7;
-}
-
-.closed-toggle-label {
+  gap: 6px;
+  padding: 10px 14px;
   font-family: var(--font-ui);
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-}
-
-.closed-toggle-count {
-  font-family: var(--font-data);
-  font-size: 10.5px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+.holdings-tab:hover {
+  color: var(--text-primary);
+}
+.holdings-tab--active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+
+.holdings-tab-count {
+  font-family: var(--font-data);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-muted);
   background: var(--border);
-  padding: 2px 8px;
-  border-radius: 20px;
-  letter-spacing: 0.02em;
+  padding: 1px 6px;
+  border-radius: 10px;
+  letter-spacing: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.holdings-tab--active .holdings-tab-count {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
 }
 
-.closed-toggle-chevron {
-  margin-left: auto;
-  font-size: 16px;
-  line-height: 1;
-  color: var(--text-secondary);
-  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  align-items: center;
-}
-.closed-toggle-chevron.expanded {
-  transform: rotate(90deg);
+/* ─── Tab Panel Animation ────────────────────────────────────── */
+
+.holdings-tab-panel {
+  animation: tabReveal 0.16s ease forwards;
 }
 
-.closed-table-wrap {
-  animation: closedReveal 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  transform-origin: top;
-}
-
-@keyframes closedReveal {
-  from { opacity: 0; transform: translateY(-6px); }
+@keyframes tabReveal {
+  from { opacity: 0; transform: translateY(3px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.closed-table {
-  opacity: 0.9;
-}
-.closed-table tbody .data-row:hover {
-  opacity: 1;
-}
-
-.closed-th--right  { text-align: right; }
-.closed-th--center { text-align: center; }
+/* ─── Closed Positions Table Cells ───────────────────────────── */
 
 .closed-num {
-  text-align: right;
   font-family: var(--font-data);
   font-size: 13px;
   font-variant-numeric: tabular-nums;
   color: var(--text-primary);
+  text-align: right;
 }
 
-.closed-asset-class-cell {
-  text-align: center;
+.closed-date {
+  font-family: var(--font-data);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+  text-align: right;
+  white-space: nowrap;
 }
+
 .closed-asset-badge {
   display: inline-block;
   font-family: var(--font-ui);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--text-secondary);
   background: var(--border);
-  padding: 2px 9px;
+  padding: 2px 8px;
   border-radius: 20px;
-}
-
-.closed-group-gl {
-  text-align: right;
-}
-.closed-gl-sum {
-  font-family: var(--font-data);
-  font-size: 12.5px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
 }
 
 .closed-gl-pill {
@@ -985,20 +971,12 @@
   border-radius: 20px;
   letter-spacing: -0.01em;
 }
-.closed-gl-pill--pos {
-  background: var(--success-bg);
-  color: var(--success);
-}
-.closed-gl-pill--neg {
-  background: var(--danger-bg);
-  color: var(--danger);
-}
+.closed-gl-pill--pos { background: var(--success-bg); color: var(--success); }
+.closed-gl-pill--neg { background: var(--danger-bg);  color: var(--danger); }
 
-.closed-hold-period {
-  text-align: right;
+.closed-gl-sum {
   font-family: var(--font-data);
-  font-size: 12px;
+  font-size: 12.5px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: var(--text-secondary);
-  letter-spacing: 0.01em;
 }
