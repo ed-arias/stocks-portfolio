@@ -45,6 +45,22 @@ export interface StockPosition {
   transactions: Transaction[];
 }
 
+export interface ClosedPosition {
+  id: string;
+  ticker: string;
+  companyName: string;
+  assetClass: AssetClass;
+  shares: number;
+  avgCost: number;
+  exitPrice: number;
+  // Pre-computed by backend
+  realizedGain: number;
+  realizedGainPercentage: number;
+  openDate: string;  // ISO 8601 date: YYYY-MM-DD
+  closeDate: string; // ISO 8601 date: YYYY-MM-DD
+  holdDays: number;
+}
+
 export interface PortfolioSummary {
   totalValue: number;
   dailyGain: number;

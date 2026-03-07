@@ -1,4 +1,4 @@
-import type { AllocationBreakdown, Period, PortfolioHistoryPoint, PortfolioSummary, StockPosition, Transaction } from '../types';
+import type { AllocationBreakdown, ClosedPosition, Period, PortfolioHistoryPoint, PortfolioSummary, StockPosition, Transaction } from '../types';
 
 // ─── History helpers (run once at module load, not per-call) ──────────────────
 
@@ -242,6 +242,67 @@ const MOCK_SUMMARY: PortfolioSummary = {
   },
 };
 
+// ─── Mock closed positions ────────────────────────────────────────────────────
+
+const MOCK_CLOSED_POSITIONS: ClosedPosition[] = [
+  {
+    id: 'c1',
+    ticker: 'MSFT',
+    companyName: 'Microsoft Corporation',
+    assetClass: 'stock',
+    shares: 5,
+    avgCost: 270.00,
+    exitPrice: 335.00,
+    realizedGain: 325.00,
+    realizedGainPercentage: 24.07,
+    openDate: '2022-01-10',
+    closeDate: '2023-09-15',
+    holdDays: 613,
+  },
+  {
+    id: 'c2',
+    ticker: 'AMD',
+    companyName: 'Advanced Micro Devices, Inc.',
+    assetClass: 'stock',
+    shares: 10,
+    avgCost: 85.00,
+    exitPrice: 70.00,
+    realizedGain: -150.00,
+    realizedGainPercentage: -17.65,
+    openDate: '2023-02-15',
+    closeDate: '2023-10-20',
+    holdDays: 247,
+  },
+  {
+    id: 'c3',
+    ticker: 'QQQ',
+    companyName: 'Invesco QQQ Trust',
+    assetClass: 'etf',
+    shares: 8,
+    avgCost: 285.00,
+    exitPrice: 410.00,
+    realizedGain: 1000.00,
+    realizedGainPercentage: 43.86,
+    openDate: '2022-06-01',
+    closeDate: '2024-01-10',
+    holdDays: 588,
+  },
+  {
+    id: 'c4',
+    ticker: 'ETH',
+    companyName: 'Ethereum',
+    assetClass: 'crypto',
+    shares: 0.5,
+    avgCost: 1600.00,
+    exitPrice: 3800.00,
+    realizedGain: 1100.00,
+    realizedGainPercentage: 137.50,
+    openDate: '2023-10-01',
+    closeDate: '2024-03-15',
+    holdDays: 167,
+  },
+];
+
 export const StockService = {
   getPortfolioSummary: async (): Promise<PortfolioSummary> => {
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -251,5 +312,10 @@ export const StockService = {
   getPortfolioHistory: async (period: Period): Promise<PortfolioHistoryPoint[]> => {
     await new Promise((resolve) => setTimeout(resolve, 150));
     return MOCK_HISTORY[period];
+  },
+
+  getClosedPositions: async (): Promise<ClosedPosition[]> => {
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    return MOCK_CLOSED_POSITIONS;
   },
 };

@@ -46,6 +46,7 @@ Currently all portfolio data is hardcoded in `StockService.ts`. A real backend w
 | B3.1 | `GET /api/portfolio` — returns `PortfolioSummary` | Replaces mock; pre-computes all derived fields server-side |
 | B3.2 | `GET /api/portfolio/history?period=` — returns `PortfolioHistoryPoint[]` | Replaces mock history |
 | B3.3 | `GET /api/positions` — returns `StockPosition[]` | Supports paginated holdings table |
+| B3.3a | `GET /api/positions/closed` — returns `ClosedPosition[]` | Feature 2.12 — Closed / historical positions view (P2) |
 | B3.4 | `POST /api/transactions` — record a buy/sell/dividend | Feature 12.1 — Manual transaction entry (P0) |
 | B3.5 | `PUT /api/transactions/:id` / `DELETE /api/transactions/:id` | Feature 12.2 — Edit/delete transactions (P0) |
 | B3.6 | `POST /api/transactions/import` — CSV import | Feature 12.3 — CSV import (P1) |
@@ -206,6 +207,52 @@ interface AllocationBreakdown {
   key: string;        // Dimension-specific identifier: asset class key, ticker, etc.
   value: number;      // Total market value in USD
   percentage: number; // Portfolio weight (0–100); pre-computed by backend
+}
+```
+
+---
+
+### `GET /positions/closed`
+
+Returns all fully-exited positions with pre-computed realized P&L and hold period.
+
+**Response**
+```json
+[
+  {
+    "id": "c1",
+    "ticker": "MSFT",
+    "companyName": "Microsoft Corporation",
+    "assetClass": "stock",
+    "shares": 5,
+    "avgCost": 270.00,
+    "exitPrice": 335.00,
+    "realizedGain": 325.00,
+    "realizedGainPercentage": 24.07,
+    "openDate": "2022-01-10",
+    "closeDate": "2023-09-15",
+    "holdDays": 613
+  }
+]
+```
+
+**Types**
+
+```typescript
+interface ClosedPosition {
+  id: string;
+  ticker: string;
+  companyName: string;
+  assetClass: AssetClass;
+  shares: number;                      // Total shares sold
+  avgCost: number;                     // Average cost basis per share in USD
+  exitPrice: number;                   // Weighted average exit price per share in USD
+  // Pre-computed by backend
+  realizedGain: number;                // (exitPrice − avgCost) × shares in USD
+  realizedGainPercentage: number;      // realizedGain / costBasis × 100
+  openDate: string;                    // ISO 8601 date of first buy
+  closeDate: string;                   // ISO 8601 date of final sell
+  holdDays: number;                    // closeDate − openDate in calendar days
 }
 ```
 

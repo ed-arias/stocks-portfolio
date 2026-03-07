@@ -4,7 +4,8 @@ import { useTheme } from './context/ThemeContext'
 import AllocationExplorer from './features/AllocationExplorer/AllocationExplorer'
 import { PortfolioChart } from './features/PortfolioChart/PortfolioChart'
 import { StockService } from './services/StockService'
-import type { PortfolioSummary, StockPosition, Transaction } from './types'
+import { ClosedPositionsTable } from './features/ClosedPositionsTable/ClosedPositionsTable'
+import type { ClosedPosition, PortfolioSummary, StockPosition, Transaction } from './types'
 
 type ColumnId = 'shares' | 'avgCost' | 'price' | 'marketValue' | 'dailyChange' | 'unrealizedGain' | 'totalReturn' | 'dividendYield'
 type SortKey = ColumnId | 'ticker'
@@ -197,6 +198,7 @@ function LoadingState({ theme, toggleTheme }: { theme: string; toggleTheme: () =
 function App() {
   const { theme, toggleTheme } = useTheme()
   const [portfolio, setPortfolio] = useState<PortfolioSummary | null>(null)
+  const [closedPositions, setClosedPositions] = useState<ClosedPosition[]>([])
   const [loading, setLoading] = useState(true)
   const [visibleColumns, setVisibleColumns] = useState<Record<ColumnId, boolean>>(loadColumnVisibility)
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -243,8 +245,12 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await StockService.getPortfolioSummary()
+        const [data, closed] = await Promise.all([
+          StockService.getPortfolioSummary(),
+          StockService.getClosedPositions(),
+        ])
         setPortfolio(data)
+        setClosedPositions(closed)
       } catch (error) {
         console.error('Failed to fetch portfolio data', error)
       } finally {
@@ -599,6 +605,7 @@ function App() {
               </tbody>
             </table>
           </div>
+          <ClosedPositionsTable positions={closedPositions} />
         </section>
       </main>
       {selectedPosition && (
