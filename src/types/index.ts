@@ -18,6 +18,11 @@ export interface AnalystRating {
   analystCount: number;
 }
 
+export interface FairValueEstimate {
+  price: number;   // Estimated fair value per share in USD
+  source: string;  // Data provider name (e.g., "Morningstar")
+}
+
 export interface AllocationBreakdown {
   key: string;        // Asset class key, ticker, sector, etc.
   value: number;      // Total market value in USD
@@ -49,6 +54,7 @@ export interface StockPosition {
   totalReturnPercentage: number;
   transactions: Transaction[];
   analystRating?: AnalystRating;
+  fairValue?: FairValueEstimate;
 }
 
 export interface ClosedPosition {

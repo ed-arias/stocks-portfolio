@@ -6,7 +6,7 @@ import { PortfolioChart } from './features/PortfolioChart/PortfolioChart'
 import { StockService } from './services/StockService'
 import type { ClosedPosition, PortfolioSummary, StockPosition, Transaction } from './types'
 
-type ColumnId = 'shares' | 'avgCost' | 'price' | 'marketValue' | 'dailyChange' | 'unrealizedGain' | 'totalReturn' | 'dividendYield' | 'analystRating'
+type ColumnId = 'shares' | 'avgCost' | 'price' | 'marketValue' | 'dailyChange' | 'unrealizedGain' | 'totalReturn' | 'dividendYield' | 'analystRating' | 'fairValue'
 type SortKey = ColumnId | 'ticker'
 type ClosedSortKey =
   | 'ticker' | 'assetClass' | 'shares' | 'avgCost'
@@ -35,6 +35,7 @@ const COLUMN_LABELS: Record<ColumnId, string> = {
   totalReturn:   'Total Return',
   dividendYield: 'Div. Yield',
   analystRating: 'Analyst Rating',
+  fairValue:     'Fair Value',
 }
 
 const ALL_COLUMNS = Object.keys(COLUMN_LABELS) as ColumnId[]
@@ -42,7 +43,7 @@ const ALL_COLUMNS = Object.keys(COLUMN_LABELS) as ColumnId[]
 const DEFAULT_VISIBILITY: Record<ColumnId, boolean> = {
   shares: true, avgCost: true, price: true, marketValue: true,
   dailyChange: true, unrealizedGain: true, totalReturn: true, dividendYield: true,
-  analystRating: true,
+  analystRating: true, fairValue: true,
 }
 
 function loadColumnVisibility(): Record<ColumnId, boolean> {
@@ -89,6 +90,17 @@ const RATING_ORDER: Record<string, number> = {
 
 const ratingOrdinal = (pos: StockPosition): number =>
   pos.analystRating ? RATING_ORDER[pos.analystRating.label] : 99
+
+const fairValueUpside = (pos: StockPosition): number => {
+  if (!pos.fairValue) return -Infinity
+  return ((pos.fairValue.price - pos.currentPrice) / pos.currentPrice) * 100
+}
+
+const fairValueTier = (upside: number): { cls: string; label: string } => {
+  if (upside > 10)  return { cls: 'fv-undervalued', label: 'Undervalued' }
+  if (upside < -10) return { cls: 'fv-overvalued',  label: 'Overvalued'  }
+  return                   { cls: 'fv-fair',         label: 'Fair'        }
+}
 
 const RATING_CLASS: Record<string, string> = {
   'Strong Buy':  'rating-strong-buy',
@@ -376,6 +388,14 @@ function App() {
       if (sortKey === 'totalReturn')    return (a.totalReturn - b.totalReturn) * dir
       if (sortKey === 'dividendYield')  return (a.dividendYield - b.dividendYield) * dir
       if (sortKey === 'analystRating')  return (ratingOrdinal(a) - ratingOrdinal(b)) * dir
+      if (sortKey === 'fairValue') {
+        const ua = a.fairValue ? fairValueUpside(a) : -Infinity
+        const ub = b.fairValue ? fairValueUpside(b) : -Infinity
+        if (!a.fairValue && !b.fairValue) return 0
+        if (!a.fairValue) return 1
+        if (!b.fairValue) return -1
+        return (ua - ub) * dir
+      }
       return (a.shares - b.shares) * dir
     })
   }, [portfolio, sortKey, sortDir])
@@ -621,6 +641,7 @@ function App() {
                       {visibleColumns.totalReturn    && <th data-sort={sortKey === 'totalReturn'    ? sortDir : 'none'} onClick={() => handleSort('totalReturn')}>Total Return</th>}
                       {visibleColumns.dividendYield  && <th data-sort={sortKey === 'dividendYield'  ? sortDir : 'none'} onClick={() => handleSort('dividendYield')}>Div. Yield</th>}
                       {visibleColumns.analystRating  && <th data-sort={sortKey === 'analystRating'  ? sortDir : 'none'} onClick={() => handleSort('analystRating')}>Analyst Rating</th>}
+                      {visibleColumns.fairValue      && <th data-sort={sortKey === 'fairValue'      ? sortDir : 'none'} onClick={() => handleSort('fairValue')}>Fair Value</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -662,6 +683,7 @@ function App() {
                               )}
                               {visibleColumns.dividendYield  && <td />}
                               {visibleColumns.analystRating  && <td />}
+                              {visibleColumns.fairValue      && <td />}
                             </tr>
                             {!collapsedGroups.has(group.key) && group.positions.map(pos => (
                               <tr key={pos.id} className="data-row" onClick={() => setSelectedPosition(pos)}>
@@ -709,6 +731,23 @@ function App() {
                                           <span className="rating-count">{pos.analystRating.analystCount}</span>
                                         </span>
                                       : '—'}
+                                  </td>
+                                )}
+                                {visibleColumns.fairValue && (
+                                  <td>
+                                    {pos.fairValue ? (() => {
+                                      const upside = fairValueUpside(pos)
+                                      const { cls, label } = fairValueTier(upside)
+                                      return (
+                                        <span className="fv-cell">
+                                          <span>{formatCurrency(pos.fairValue.price)}</span>
+                                          <span className={upside >= 0 ? 'positive' : 'negative'}>
+                                            {upside >= 0 ? '+' : ''}{upside.toFixed(1)}%
+                                          </span>
+                                          <span className={`fv-badge ${cls}`}>{label}</span>
+                                        </span>
+                                      )
+                                    })() : '—'}
                                   </td>
                                 )}
                               </tr>
@@ -761,6 +800,23 @@ function App() {
                                       <span className="rating-count">{pos.analystRating.analystCount}</span>
                                     </span>
                                   : '—'}
+                              </td>
+                            )}
+                            {visibleColumns.fairValue && (
+                              <td>
+                                {pos.fairValue ? (() => {
+                                  const upside = fairValueUpside(pos)
+                                  const { cls, label } = fairValueTier(upside)
+                                  return (
+                                    <span className="fv-cell">
+                                      <span>{formatCurrency(pos.fairValue.price)}</span>
+                                      <span className={upside >= 0 ? 'positive' : 'negative'}>
+                                        {upside >= 0 ? '+' : ''}{upside.toFixed(1)}%
+                                      </span>
+                                      <span className={`fv-badge ${cls}`}>{label}</span>
+                                    </span>
+                                  )
+                                })() : '—'}
                               </td>
                             )}
                           </tr>

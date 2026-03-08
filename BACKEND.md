@@ -129,7 +129,8 @@ Returns the full portfolio overview.
         { "id": "aapl-1", "date": "2023-06-12", "type": "buy",      "shares": 10,   "price": 150.00, "amount": 1500.00 },
         { "id": "aapl-2", "date": "2024-05-17", "type": "dividend", "shares": null, "price": null,   "amount":    3.65 }
       ],
-      "analystRating": { "label": "Buy", "analystCount": 31 }
+      "analystRating": { "label": "Buy", "analystCount": 31 },
+      "fairValue": { "price": 210.00, "source": "Morningstar" }
     }
   ],
   "allocations": {
@@ -197,6 +198,12 @@ interface StockPosition {
   totalReturnPercentage: number;       // totalReturn / costBasis × 100
   transactions: Transaction[];         // Full transaction history; pre-populated by backend
   analystRating?: AnalystRating;       // Analyst consensus rating; undefined if no coverage
+  fairValue?: FairValueEstimate;       // Fair value estimate; undefined if not available
+}
+
+interface FairValueEstimate {
+  price: number;   // Estimated fair value per share in USD
+  source: string;  // Data provider name (e.g., "Morningstar", "Simply Wall St")
 }
 
 interface AnalystRating {

@@ -49,7 +49,7 @@ Features are grouped by epic and tagged with priority:
 | 2.11 | Transaction history per holding (buys, sells, dividends) | ✅ Done | Sharesight, Yahoo Finance |
 | 2.12 | Closed / historical positions view | ✅ Done | Sharesight |
 | 2.13 | Per-holding analyst consensus rating column | ✅ Done | Seeking Alpha, Yahoo Finance |
-| 2.14 | Per-holding fair value estimate column | P3 | Morningstar |
+| 2.14 | Per-holding fair value estimate column | ✅ Done | Morningstar |
 
 ---
 

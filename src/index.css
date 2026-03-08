@@ -28,6 +28,17 @@
   --shadow-md:      0 4px 16px rgba(0, 0, 0, 0.08);
   --sidebar-width:  240px;
 
+  /* ─── Fair Value tokens ─────────────────────────────────────── */
+  --fv-undervalued-bg:     #E9F8ED;
+  --fv-undervalued-text:   #1A7A3A;
+  --fv-undervalued-border: rgba(26, 122, 58, 0.20);
+  --fv-fair-bg:            #F2F2F7;
+  --fv-fair-text:          #636366;
+  --fv-fair-border:        rgba(99, 99, 102, 0.18);
+  --fv-overvalued-bg:      #FFF0EE;
+  --fv-overvalued-text:    #C0362B;
+  --fv-overvalued-border:  rgba(192, 54, 43, 0.20);
+
   /* ─── Analyst Rating tokens ─────────────────────────────────── */
   --rating-strong-buy-bg:    #D1F5DC;
   --rating-strong-buy-text:  #1A7A36;
@@ -75,6 +86,17 @@
   --asset-cash:     #8E8E93;
   --shadow-sm:      0 1px 3px rgba(0, 0, 0, 0.5);
   --shadow-md:      0 4px 20px rgba(0, 0, 0, 0.6);
+
+  /* ─── Fair Value tokens — dark ──────────────────────────────── */
+  --fv-undervalued-bg:     rgba(48, 209, 88, 0.13);
+  --fv-undervalued-text:   #30D158;
+  --fv-undervalued-border: rgba(48, 209, 88, 0.22);
+  --fv-fair-bg:            rgba(174, 174, 178, 0.10);
+  --fv-fair-text:          #AEAEB2;
+  --fv-fair-border:        rgba(174, 174, 178, 0.18);
+  --fv-overvalued-bg:      rgba(255, 69, 58, 0.13);
+  --fv-overvalued-text:    #FF453A;
+  --fv-overvalued-border:  rgba(255, 69, 58, 0.22);
 
   /* ─── Analyst Rating tokens — dark ─────────────────────────── */
   --rating-strong-buy-bg:    rgba(48, 209, 88, 0.16);

@@ -1004,6 +1004,51 @@
 .closed-gl-pill--pos { background: var(--success-bg); color: var(--success); }
 .closed-gl-pill--neg { background: var(--danger-bg);  color: var(--danger); }
 
+/* ─── Fair Value Badge ───────────────────────────────────────── */
+.fv-badge {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            3px;
+  padding:        2px 7px 2px 6px;
+  border-radius:  20px;
+  border:         1px solid transparent;
+  font-family:    var(--font-data);
+  font-size:      10px;
+  font-weight:    600;
+  letter-spacing: 0.03em;
+  line-height:    1;
+  white-space:    nowrap;
+  user-select:    none;
+}
+.fv-badge::before {
+  font-size: 9px;
+  line-height: 1;
+}
+.fv-undervalued {
+  background:   var(--fv-undervalued-bg);
+  color:        var(--fv-undervalued-text);
+  border-color: var(--fv-undervalued-border);
+}
+.fv-undervalued::before { content: '↑'; }
+.fv-fair {
+  background:   var(--fv-fair-bg);
+  color:        var(--fv-fair-text);
+  border-color: var(--fv-fair-border);
+}
+.fv-fair::before { content: '→'; }
+.fv-overvalued {
+  background:   var(--fv-overvalued-bg);
+  color:        var(--fv-overvalued-text);
+  border-color: var(--fv-overvalued-border);
+}
+.fv-overvalued::before { content: '↓'; }
+
+.fv-cell {
+  display:     inline-flex;
+  align-items: center;
+  gap:         6px;
+}
+
 .closed-gl-sum {
   font-family: var(--font-data);
   font-size: 12.5px;

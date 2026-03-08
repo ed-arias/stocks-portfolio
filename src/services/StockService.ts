@@ -1,4 +1,4 @@
-import type { AllocationBreakdown, AnalystRating, ClosedPosition, Period, PortfolioHistoryPoint, PortfolioSummary, StockPosition, Transaction } from '../types';
+import type { AllocationBreakdown, AnalystRating, ClosedPosition, FairValueEstimate, Period, PortfolioHistoryPoint, PortfolioSummary, StockPosition, Transaction } from '../types';
 
 // ─── History helpers (run once at module load, not per-call) ──────────────────
 
@@ -95,6 +95,16 @@ const BTC_TXN: Transaction[] = [
   { id: 'btc-3', date: '2024-10-22', type: 'buy',  shares: 0.05, price: 63500.00, amount: 3175.00 },
 ];
 
+// ─── Mock fair value estimates ────────────────────────────────────────────────
+
+const FAIR_VALUES: Record<string, FairValueEstimate> = {
+  AAPL: { price: 220.00, source: 'Morningstar' },  // +18.3% → Undervalued
+  TSLA: { price: 160.00, source: 'Morningstar' },  // −19.0% → Overvalued
+  NVDA: { price: 620.00, source: 'Morningstar' },  // −14.6% → Overvalued
+  MSFT: { price: 410.00, source: 'Morningstar' },  // +1.5%  → Fair
+  VOO:  { price: 460.00, source: 'Morningstar' },  // +15.0% → Undervalued
+}
+
 // ─── Mock analyst ratings ─────────────────────────────────────────────────────
 
 const RATINGS: Record<string, AnalystRating> = {
@@ -127,6 +137,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     totalReturnPercentage: 26.16,
     transactions: AAPL_TXN,
     analystRating: RATINGS.AAPL,
+    fairValue: FAIR_VALUES.AAPL,
   },
   {
     id: '2',
@@ -147,6 +158,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     totalReturnPercentage: -1.21,
     transactions: TSLA_TXN,
     analystRating: RATINGS.TSLA,
+    fairValue: FAIR_VALUES.TSLA,
   },
   {
     id: '3',
@@ -167,6 +179,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     totalReturnPercentage: 61.56,
     transactions: NVDA_TXN,
     analystRating: RATINGS.NVDA,
+    fairValue: FAIR_VALUES.NVDA,
   },
   {
     id: '4',
@@ -187,6 +200,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     totalReturnPercentage: 33.25,
     transactions: MSFT_TXN,
     analystRating: RATINGS.MSFT,
+    fairValue: FAIR_VALUES.MSFT,
   },
   {
     id: '5',
@@ -207,6 +221,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     totalReturnPercentage: 8.21,
     transactions: VOO_TXN,
     analystRating: RATINGS.VOO,
+    fairValue: FAIR_VALUES.VOO,
   },
   {
     id: '6',
