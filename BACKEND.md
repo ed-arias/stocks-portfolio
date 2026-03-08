@@ -128,7 +128,8 @@ Returns the full portfolio overview.
       "transactions": [
         { "id": "aapl-1", "date": "2023-06-12", "type": "buy",      "shares": 10,   "price": 150.00, "amount": 1500.00 },
         { "id": "aapl-2", "date": "2024-05-17", "type": "dividend", "shares": null, "price": null,   "amount":    3.65 }
-      ]
+      ],
+      "analystRating": { "label": "Buy", "analystCount": 31 }
     }
   ],
   "allocations": {
@@ -195,6 +196,12 @@ interface StockPosition {
   totalReturn: number;                 // unrealizedGain + dividends received (USD)
   totalReturnPercentage: number;       // totalReturn / costBasis × 100
   transactions: Transaction[];         // Full transaction history; pre-populated by backend
+  analystRating?: AnalystRating;       // Analyst consensus rating; undefined if no coverage
+}
+
+interface AnalystRating {
+  label: 'Strong Buy' | 'Buy' | 'Hold' | 'Sell' | 'Strong Sell';
+  analystCount: number;                // Number of analysts contributing to consensus
 }
 
 // Future endpoint: GET /positions/:id/transactions → Transaction[]

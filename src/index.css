@@ -28,6 +28,18 @@
   --shadow-md:      0 4px 16px rgba(0, 0, 0, 0.08);
   --sidebar-width:  240px;
 
+  /* ─── Analyst Rating tokens ─────────────────────────────────── */
+  --rating-strong-buy-bg:    #D1F5DC;
+  --rating-strong-buy-text:  #1A7A36;
+  --rating-buy-bg:           #E8F8EE;
+  --rating-buy-text:         #2C8A48;
+  --rating-hold-bg:          #FFF3CD;
+  --rating-hold-text:        #7A5500;
+  --rating-sell-bg:          #FFE5E3;
+  --rating-sell-text:        #C0221A;
+  --rating-strong-sell-bg:   #FFCFCC;
+  --rating-strong-sell-text: #A01810;
+
   /* ─── Animation Tokens ─────────────────────────────────────── */
   --anim-duration: 400ms;
   --anim-ease:     cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -63,6 +75,18 @@
   --asset-cash:     #8E8E93;
   --shadow-sm:      0 1px 3px rgba(0, 0, 0, 0.5);
   --shadow-md:      0 4px 20px rgba(0, 0, 0, 0.6);
+
+  /* ─── Analyst Rating tokens — dark ─────────────────────────── */
+  --rating-strong-buy-bg:    rgba(48, 209, 88, 0.16);
+  --rating-strong-buy-text:  #30D158;
+  --rating-buy-bg:           rgba(48, 209, 88, 0.10);
+  --rating-buy-text:         #5DD97A;
+  --rating-hold-bg:          rgba(255, 214, 10, 0.13);
+  --rating-hold-text:        #FFD60A;
+  --rating-sell-bg:          rgba(255, 69, 58, 0.10);
+  --rating-sell-text:        #FF6B61;
+  --rating-strong-sell-bg:   rgba(255, 69, 58, 0.18);
+  --rating-strong-sell-text: #FF453A;
 }
 
 /* ─── Base ─────────────────────────────────────────────────── */

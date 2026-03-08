@@ -13,6 +13,11 @@ export interface Transaction {
 
 export type AssetClass = 'stock' | 'etf' | 'crypto' | 'cash';
 
+export interface AnalystRating {
+  label: 'Strong Buy' | 'Buy' | 'Hold' | 'Sell' | 'Strong Sell';
+  analystCount: number;
+}
+
 export interface AllocationBreakdown {
   key: string;        // Asset class key, ticker, sector, etc.
   value: number;      // Total market value in USD
@@ -43,6 +48,7 @@ export interface StockPosition {
   totalReturn: number;
   totalReturnPercentage: number;
   transactions: Transaction[];
+  analystRating?: AnalystRating;
 }
 
 export interface ClosedPosition {

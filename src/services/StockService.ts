@@ -1,4 +1,4 @@
-import type { AllocationBreakdown, ClosedPosition, Period, PortfolioHistoryPoint, PortfolioSummary, StockPosition, Transaction } from '../types';
+import type { AllocationBreakdown, AnalystRating, ClosedPosition, Period, PortfolioHistoryPoint, PortfolioSummary, StockPosition, Transaction } from '../types';
 
 // ─── History helpers (run once at module load, not per-call) ──────────────────
 
@@ -95,6 +95,16 @@ const BTC_TXN: Transaction[] = [
   { id: 'btc-3', date: '2024-10-22', type: 'buy',  shares: 0.05, price: 63500.00, amount: 3175.00 },
 ];
 
+// ─── Mock analyst ratings ─────────────────────────────────────────────────────
+
+const RATINGS: Record<string, AnalystRating> = {
+  AAPL: { label: 'Buy',         analystCount: 31 },
+  TSLA: { label: 'Sell',        analystCount: 38 },
+  NVDA: { label: 'Strong Buy',  analystCount: 44 },
+  MSFT: { label: 'Hold',        analystCount: 52 },
+  VOO:  { label: 'Strong Sell', analystCount: 12 },
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 const MOCK_POSITIONS: StockPosition[] = [
@@ -116,6 +126,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     totalReturn: 392.36,
     totalReturnPercentage: 26.16,
     transactions: AAPL_TXN,
+    analystRating: RATINGS.AAPL,
   },
   {
     id: '2',
@@ -135,6 +146,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     totalReturn: -12.10,
     totalReturnPercentage: -1.21,
     transactions: TSLA_TXN,
+    analystRating: RATINGS.TSLA,
   },
   {
     id: '3',
@@ -154,6 +166,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     totalReturn: 4155.27,
     totalReturnPercentage: 61.56,
     transactions: NVDA_TXN,
+    analystRating: RATINGS.NVDA,
   },
   {
     id: '4',
@@ -173,6 +186,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     totalReturn: 824.68,
     totalReturnPercentage: 33.25,
     transactions: MSFT_TXN,
+    analystRating: RATINGS.MSFT,
   },
   {
     id: '5',
@@ -192,6 +206,7 @@ const MOCK_POSITIONS: StockPosition[] = [
     totalReturn: 624.00,
     totalReturnPercentage: 8.21,
     transactions: VOO_TXN,
+    analystRating: RATINGS.VOO,
   },
   {
     id: '6',

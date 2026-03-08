@@ -6,7 +6,7 @@ import { PortfolioChart } from './features/PortfolioChart/PortfolioChart'
 import { StockService } from './services/StockService'
 import type { ClosedPosition, PortfolioSummary, StockPosition, Transaction } from './types'
 
-type ColumnId = 'shares' | 'avgCost' | 'price' | 'marketValue' | 'dailyChange' | 'unrealizedGain' | 'totalReturn' | 'dividendYield'
+type ColumnId = 'shares' | 'avgCost' | 'price' | 'marketValue' | 'dailyChange' | 'unrealizedGain' | 'totalReturn' | 'dividendYield' | 'analystRating'
 type SortKey = ColumnId | 'ticker'
 type ClosedSortKey =
   | 'ticker' | 'assetClass' | 'shares' | 'avgCost'
@@ -34,6 +34,7 @@ const COLUMN_LABELS: Record<ColumnId, string> = {
   unrealizedGain:'Profit / Loss',
   totalReturn:   'Total Return',
   dividendYield: 'Div. Yield',
+  analystRating: 'Analyst Rating',
 }
 
 const ALL_COLUMNS = Object.keys(COLUMN_LABELS) as ColumnId[]
@@ -41,6 +42,7 @@ const ALL_COLUMNS = Object.keys(COLUMN_LABELS) as ColumnId[]
 const DEFAULT_VISIBILITY: Record<ColumnId, boolean> = {
   shares: true, avgCost: true, price: true, marketValue: true,
   dailyChange: true, unrealizedGain: true, totalReturn: true, dividendYield: true,
+  analystRating: true,
 }
 
 function loadColumnVisibility(): Record<ColumnId, boolean> {
@@ -80,6 +82,21 @@ const CLOSED_COLUMNS: ClosedSortKey[] = [
 
 const holdingColor = (idx: number, total: number) =>
   `hsl(${Math.round((idx / total) * 360)}, 55%, 75%)`
+
+const RATING_ORDER: Record<string, number> = {
+  'Strong Buy': 1, 'Buy': 2, 'Hold': 3, 'Sell': 4, 'Strong Sell': 5,
+}
+
+const ratingOrdinal = (pos: StockPosition): number =>
+  pos.analystRating ? RATING_ORDER[pos.analystRating.label] : 99
+
+const RATING_CLASS: Record<string, string> = {
+  'Strong Buy':  'rating-strong-buy',
+  'Buy':         'rating-buy',
+  'Hold':        'rating-hold',
+  'Sell':        'rating-sell',
+  'Strong Sell': 'rating-strong-sell',
+}
 
 function formatHoldPeriod(days: number): string {
   if (days < 30) return `${days}d`
@@ -358,6 +375,7 @@ function App() {
       if (sortKey === 'unrealizedGain') return (a.unrealizedGain - b.unrealizedGain) * dir
       if (sortKey === 'totalReturn')    return (a.totalReturn - b.totalReturn) * dir
       if (sortKey === 'dividendYield')  return (a.dividendYield - b.dividendYield) * dir
+      if (sortKey === 'analystRating')  return (ratingOrdinal(a) - ratingOrdinal(b)) * dir
       return (a.shares - b.shares) * dir
     })
   }, [portfolio, sortKey, sortDir])
@@ -602,6 +620,7 @@ function App() {
                       {visibleColumns.unrealizedGain && <th data-sort={sortKey === 'unrealizedGain' ? sortDir : 'none'} onClick={() => handleSort('unrealizedGain')}>Profit / Loss</th>}
                       {visibleColumns.totalReturn    && <th data-sort={sortKey === 'totalReturn'    ? sortDir : 'none'} onClick={() => handleSort('totalReturn')}>Total Return</th>}
                       {visibleColumns.dividendYield  && <th data-sort={sortKey === 'dividendYield'  ? sortDir : 'none'} onClick={() => handleSort('dividendYield')}>Div. Yield</th>}
+                      {visibleColumns.analystRating  && <th data-sort={sortKey === 'analystRating'  ? sortDir : 'none'} onClick={() => handleSort('analystRating')}>Analyst Rating</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -642,6 +661,7 @@ function App() {
                                 </td>
                               )}
                               {visibleColumns.dividendYield  && <td />}
+                              {visibleColumns.analystRating  && <td />}
                             </tr>
                             {!collapsedGroups.has(group.key) && group.positions.map(pos => (
                               <tr key={pos.id} className="data-row" onClick={() => setSelectedPosition(pos)}>
@@ -679,6 +699,17 @@ function App() {
                                 )}
                                 {visibleColumns.dividendYield  && (
                                   <td>{pos.dividendYield > 0 ? formatPercentage(pos.dividendYield) : '—'}</td>
+                                )}
+                                {visibleColumns.analystRating  && (
+                                  <td>
+                                    {pos.analystRating
+                                      ? <span className={`rating-badge ${RATING_CLASS[pos.analystRating.label]}`}>
+                                          {pos.analystRating.label}
+                                          <span className="rating-dot">·</span>
+                                          <span className="rating-count">{pos.analystRating.analystCount}</span>
+                                        </span>
+                                      : '—'}
+                                  </td>
                                 )}
                               </tr>
                             ))}
@@ -720,6 +751,17 @@ function App() {
                             )}
                             {visibleColumns.dividendYield  && (
                               <td>{pos.dividendYield > 0 ? formatPercentage(pos.dividendYield) : '—'}</td>
+                            )}
+                            {visibleColumns.analystRating  && (
+                              <td>
+                                {pos.analystRating
+                                  ? <span className={`rating-badge ${RATING_CLASS[pos.analystRating.label]}`}>
+                                      {pos.analystRating.label}
+                                      <span className="rating-dot">·</span>
+                                      <span className="rating-count">{pos.analystRating.analystCount}</span>
+                                    </span>
+                                  : '—'}
+                              </td>
                             )}
                           </tr>
                         ))
