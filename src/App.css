@@ -140,25 +140,27 @@
   box-sizing: border-box;
 }
 
-/* ─── Dashboard Grid ───────────────────────────────────────── */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 1.5rem;
-  align-items: start;
-  animation: fadeUp var(--anim-duration) var(--anim-ease) calc(var(--anim-stagger) * 1) both;
+/* ─── Top Bar — Return Metric (desktop only) ───────────────── */
+.top-bar-return-group {
+  display: contents; /* children participate in flex layout as if direct children */
 }
 
-.chart-panel {
-  min-width: 0; /* prevent flex/grid blowout */
+.top-bar-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  flex-shrink: 0;
+  margin: 0 0.25rem;
 }
 
-/* ─── Right Rail ───────────────────────────────────────────── */
-.right-rail {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-width: 0;
+.top-bar-return-label {
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
 /* ─── Summary Cards ────────────────────────────────────────── */
@@ -655,19 +657,6 @@
   box-sizing: border-box;
 }
 
-.skeleton-dashboard-grid {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 1.5rem;
-  align-items: start;
-}
-
-.skeleton-right-rail {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
 .skeleton {
   background: linear-gradient(
     90deg,
@@ -695,13 +684,9 @@
     padding: 1.5rem 1.5rem 3rem;
   }
 
-  /* 2-col grid → single column stack */
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .skeleton-dashboard-grid {
-    grid-template-columns: 1fr;
+  /* Hide the secondary return metric in the top bar — not enough space */
+  .top-bar-return-group {
+    display: none;
   }
 
   .loading-main {

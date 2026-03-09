@@ -5,7 +5,7 @@
   border-radius: 16px;
   padding: 1.5rem 1.5rem 1rem;
   box-shadow: var(--shadow-sm);
-  animation: fadeUp var(--anim-duration) var(--anim-ease) calc(var(--anim-stagger) * 3) both;
+  animation: fadeUp var(--anim-duration) var(--anim-ease) calc(var(--anim-stagger) * 1) both;
 }
 
 /* ─── Chart Header ──────────────────────────────────────────── */

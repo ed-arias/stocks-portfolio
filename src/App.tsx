@@ -221,16 +221,19 @@ function MoonIcon() {
   )
 }
 
-function TopBar({ theme, toggleTheme, totalValue, dailyGain, dailyGainPercentage }: {
+function TopBar({ theme, toggleTheme, totalValue, dailyGain, dailyGainPercentage, totalReturn, totalReturnPercentage }: {
   theme: string
   toggleTheme: () => void
   totalValue: number | null
   dailyGain: number | null
   dailyGainPercentage: number | null
+  totalReturn: number | null
+  totalReturnPercentage: number | null
 }) {
   const fmt = (val: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val)
   const isPositive = (dailyGain ?? 0) >= 0
+  const isReturnPositive = (totalReturn ?? 0) >= 0
 
   return (
     <header className="top-bar">
@@ -247,6 +250,18 @@ function TopBar({ theme, toggleTheme, totalValue, dailyGain, dailyGainPercentage
             <span className="hero-delta-full">&nbsp;{fmt(Math.abs(dailyGain))} ({dailyGainPercentage.toFixed(2)}%) today</span>
             <span className="hero-delta-short">&nbsp;{dailyGainPercentage.toFixed(2)}%</span>
           </span>
+
+          {totalReturn !== null && totalReturnPercentage !== null && (
+            <span className="top-bar-return-group">
+              <span className="top-bar-sep" aria-hidden="true" />
+              <span className="top-bar-return-label">Total Return</span>
+              <span className={`hero-delta ${isReturnPositive ? 'positive' : 'negative'}`}>
+                {isReturnPositive ? '▲' : '▼'}
+                <span className="hero-delta-full">&nbsp;{fmt(Math.abs(totalReturn))} ({totalReturnPercentage.toFixed(2)}%)</span>
+                <span className="hero-delta-short">&nbsp;{totalReturnPercentage.toFixed(2)}%</span>
+              </span>
+            </span>
+          )}
         </div>
       )}
 
@@ -286,13 +301,8 @@ function LoadingState({ theme, toggleTheme }: { theme: string; toggleTheme: () =
         </div>
       </header>
       <div className="loading-main">
-        <div className="skeleton-dashboard-grid">
-          <div className="skeleton skeleton-chart" />
-          <div className="skeleton-right-rail">
-            <div className="skeleton skeleton-card" />
-            <div className="skeleton skeleton-alloc" />
-          </div>
-        </div>
+        <div className="skeleton skeleton-chart" />
+        <div className="skeleton skeleton-alloc" />
         <div className="skeleton skeleton-table" />
       </div>
     </div>
@@ -507,8 +517,6 @@ function App() {
     return <LoadingState theme={theme} toggleTheme={toggleTheme} />
   }
 
-  const isReturnPositive = (portfolio?.totalReturn ?? 0) >= 0
-
   return (
     <div className="shell">
       <TopBar
@@ -517,61 +525,44 @@ function App() {
         totalValue={portfolio?.totalValue ?? null}
         dailyGain={portfolio?.dailyGain ?? null}
         dailyGainPercentage={portfolio?.dailyGainPercentage ?? null}
+        totalReturn={portfolio?.totalReturn ?? null}
+        totalReturnPercentage={portfolio?.totalReturnPercentage ?? null}
       />
 
       <main className="main">
-        <div className="dashboard-grid">
-          {/* Left column: chart hero */}
-          <div className="chart-panel">
-            <PortfolioChart />
-          </div>
+        <PortfolioChart />
 
-          {/* Right rail: return card + allocation */}
-          <aside className="right-rail">
-            <div className="card">
-              <p className="card-label">Total Return</p>
-              <p className="card-value">
-                {portfolio ? formatCurrency(portfolio.totalReturn) : '—'}
-              </p>
-              <p className={`card-change ${isReturnPositive ? 'positive' : 'negative'}`}>
-                <span>{isReturnPositive ? '▲' : '▼'}</span>
-                <span>{portfolio?.totalReturnPercentage.toFixed(2)}% all-time</span>
-              </p>
-            </div>
-
-            {portfolio && (
-              <AllocationExplorer
-                views={[
-                  {
-                    key:     'byAssetClass',
-                    label:   'Asset Class',
-                    title:   'Asset Allocation',
-                    data:    portfolio.allocations.byAssetClass,
-                    colorFn: (item) => {
-                      const idx = portfolio.allocations.byAssetClass.findIndex((a) => a.key === item.key)
-                      return holdingColor(idx, portfolio.allocations.byAssetClass.length)
-                    },
-                    labelFn: (item) => ASSET_CLASS_LABELS[item.key] ?? item.key,
-                  },
-                  {
-                    key:     'byHolding',
-                    label:   'Holdings',
-                    title:   'Holdings Weight',
-                    data:    portfolio.allocations.byHolding,
-                    colorFn: (item) => {
-                      const idx = portfolio.allocations.byHolding.findIndex((h) => h.key === item.key)
-                      return holdingColor(idx, portfolio.allocations.byHolding.length)
-                    },
-                    labelFn: (item) => {
-                      const pos = portfolio.positions.find((p) => p.ticker === item.key)
-                      return pos ? `${item.key} · ${pos.companyName}` : item.key
-                    },
-                  },
-                ]}
-              />
-            )}
-          </aside>
-        </div>
+        {portfolio && (
+          <AllocationExplorer
+            views={[
+              {
+                key:     'byAssetClass',
+                label:   'Asset Class',
+                title:   'Asset Allocation',
+                data:    portfolio.allocations.byAssetClass,
+                colorFn: (item) => {
+                  const idx = portfolio.allocations.byAssetClass.findIndex((a) => a.key === item.key)
+                  return holdingColor(idx, portfolio.allocations.byAssetClass.length)
+                },
+                labelFn: (item) => ASSET_CLASS_LABELS[item.key] ?? item.key,
+              },
+              {
+                key:     'byHolding',
+                label:   'Holdings',
+                title:   'Holdings Weight',
+                data:    portfolio.allocations.byHolding,
+                colorFn: (item) => {
+                  const idx = portfolio.allocations.byHolding.findIndex((h) => h.key === item.key)
+                  return holdingColor(idx, portfolio.allocations.byHolding.length)
+                },
+                labelFn: (item) => {
+                  const pos = portfolio.positions.find((p) => p.ticker === item.key)
+                  return pos ? `${item.key} · ${pos.companyName}` : item.key
+                },
+              },
+            ]}
+          />
+        )}
 
         {/* Holdings Section */}
         <section className="holdings-section">

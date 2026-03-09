@@ -18,6 +18,7 @@ Best practices:
 ## [Unreleased]
 
 ### Changed
+- **Dashboard layout v3 — full-width sections, no right rail** — eliminated the 2-column grid and right-rail sidebar; all sections (portfolio chart, allocation explorer, holdings table) are now full-width stacked vertically; Total Return metric promoted into the sticky top bar alongside portfolio value, separated by a vertical rule; Total Return card removed from the content area; this prevents the chart card from growing to match an unrelated rail and eliminates the visual void below the chart
 - **Dashboard layout redesign** — replaced the fixed 240px sidebar with a 56px sticky top bar that keeps portfolio total value and daily delta permanently visible; rearranged dashboard into a two-column grid (portfolio chart left, Total Return card + allocation explorer right) so the holdings table is always one scroll away; max-width raised from 1100px to 1400px; responsive cascade: 2-col grid collapses to single column at 900px, delta text abbreviates to percentage-only at 767px, wordmark hides at 599px
 - **Fair value badge redesign** — removed Unicode arrow characters (↑ → ↓) from the Fair Value column badge; badge now mirrors the analyst rating pill: `[Undervalued · +12.3%]` format using Figtree label + JetBrains Mono percentage, `border-radius: 100px`, no border; cell layout changed from horizontal (price | % | badge) to vertical stack (price above badge) matching the P&L and Daily Change columns
 

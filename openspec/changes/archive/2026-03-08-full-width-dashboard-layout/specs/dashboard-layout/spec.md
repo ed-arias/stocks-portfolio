@@ -1,9 +1,4 @@
-# dashboard-layout Specification
-
-## Purpose
-Defines the structural layout of the dashboard: sticky top bar with hero metric and Total Return, full-width stacked sections, responsive collapse rules, and content max-width.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Top bar displays portfolio hero metric, Total Return, and theme toggle
 The application SHALL render a sticky 56px top bar. The top bar SHALL contain three zones: brand (left), hero metric (centre), and controls (right). The hero metric zone SHALL display the total portfolio value, a daily delta badge, a vertical separator rule, a "Total Return" label, and a Total Return delta badge. The controls zone SHALL contain the icon-based theme toggle. The top bar SHALL remain fixed at the top of the viewport on scroll using `position: sticky; top: 0` with a `z-index` sufficient to overlay all scrolling content.
@@ -71,3 +66,13 @@ The main content area SHALL have a `max-width` of 1400px and SHALL be horizontal
 #### Scenario: Content centred on wide monitor
 - **WHEN** the viewport width exceeds 1400px
 - **THEN** the dashboard content is centred with equal empty margins on both sides and does not exceed 1400px in width
+
+## REMOVED Requirements
+
+### Requirement: Dashboard uses a two-column grid on wide viewports
+**Reason**: The fixed 300px right rail constrained the AllocationExplorer's horizontal layout, causing card height inflation that forced the chart card to grow artificially. Full-width sections eliminate this coupling entirely.
+**Migration**: The Total Return metric is now in the top bar. The AllocationExplorer is rendered as a direct full-width section in `<main>`.
+
+### Requirement: Dashboard grid collapses to single column on narrow viewports
+**Reason**: The 2-column grid is removed; all viewports now use the same full-width single-column layout.
+**Migration**: No migration needed — narrow viewports already see the intended layout.
