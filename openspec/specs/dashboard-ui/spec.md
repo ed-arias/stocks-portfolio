@@ -21,35 +21,16 @@ The application SHALL apply the active theme via `data-theme` on `<html>` and pe
 - **WHEN** the user reloads the page
 - **THEN** the previously selected theme is applied before first paint
 
-### Requirement: Sidebar displays logotype and icon-based theme toggle
-The sidebar SHALL display the application logotype in Figtree bold and a compact icon-based theme toggle (sun/moon SVG). The toggle SHALL NOT be a plain text button.
-
-#### Scenario: Sidebar is visible on desktop
-- **WHEN** the viewport width is 900px or wider
-- **THEN** the sidebar is rendered as a fixed left column with the logotype and theme toggle visible
-
-#### Scenario: Sidebar collapses to top bar on mobile
-- **WHEN** the viewport width is below 900px
-- **THEN** the sidebar collapses into a horizontal top bar with logotype left-aligned and toggle right-aligned
-
 ### Requirement: Summary cards present portfolio metrics with visual hierarchy
-The dashboard SHALL display at minimum a Total Portfolio Value card, a Daily Gain/Loss card, and a **Total Return card**. Card values (large numbers) SHALL use JetBrains Mono. Labels SHALL be visually subordinate using `--text-muted`. The gain/loss and total return indicators SHALL render as iOS-style pill badges — colored text on a tinted background using the success or danger token pair.
-
-#### Scenario: Positive daily gain renders as success pill
-- **WHEN** `dailyGain` is greater than or equal to zero
-- **THEN** the gain badge renders with `--success` text on `--success-bg` background with an upward indicator
-
-#### Scenario: Negative daily gain renders as danger pill
-- **WHEN** `dailyGain` is less than zero
-- **THEN** the loss badge renders with `--danger` text on `--danger-bg` background with a downward indicator
+The dashboard SHALL display a **Total Return card** as the primary summary surface. The card value SHALL use JetBrains Mono. The label SHALL be visually subordinate using `--text-muted`. The total return indicator SHALL render as an iOS-style pill badge — colored text on a tinted background using the success or danger token pair. The Total Portfolio Value and Daily Gain/Loss are no longer rendered as dedicated cards; they are presented as the top bar hero metric instead.
 
 #### Scenario: Positive total return renders as success pill
 - **WHEN** `totalReturn` is greater than or equal to zero
-- **THEN** the Total Return card badge renders with `--success` text on `--success-bg` background
+- **THEN** the Total Return card badge renders with `--success` text on `--success-bg` background with an upward indicator
 
 #### Scenario: Negative total return renders as danger pill
 - **WHEN** `totalReturn` is less than zero
-- **THEN** the Total Return card badge renders with `--danger` text on `--danger-bg` background
+- **THEN** the Total Return card badge renders with `--danger` text on `--danger-bg` background with a downward indicator
 
 ### Requirement: Holdings table displays all positions with readable data alignment
 The holdings table SHALL display ticker, shares, average cost, current price, total value, profit/loss, and **daily change** columns. All values SHALL be read directly from the `StockPosition` fields returned by the service — the component SHALL NOT perform any arithmetic. Numeric columns SHALL use `font-variant-numeric: tabular-nums` and JetBrains Mono. The ticker cell SHALL show the company name as a subordinate sub-label. The profit/loss column SHALL show the dollar value and percentage stacked vertically, color-coded with success/danger tokens. The daily change column SHALL show `dailyChange` (absolute, formatted as currency) and `dailyChangePercentage` (%) stacked vertically in the same layout as the profit/loss column, color-coded green when `dailyChange >= 0` and red when `dailyChange < 0`.
@@ -82,43 +63,52 @@ All primary surfaces (header, cards, table) SHALL animate in with a staggered CS
 - **THEN** each card appears with a staggered fade-and-translate-up, offset by 60ms per element
 
 ### Requirement: Loading state uses a shimmer skeleton
-The loading state SHALL render a shimmer skeleton that mirrors the page layout (sidebar + two card skeletons + table skeleton). It SHALL NOT be a plain text string.
+The loading state SHALL render a shimmer skeleton that mirrors the new page layout: top bar (with skeleton value and delta badge placeholders) + two-column dashboard grid skeleton (chart skeleton left, card + allocation skeleton right) + table skeleton. It SHALL NOT be a plain text string.
 
-#### Scenario: Skeleton renders before data arrives
+#### Scenario: Skeleton matches new layout on desktop
 - **WHEN** the app mounts and data has not yet resolved
-- **THEN** the shimmer skeleton is displayed with the sidebar already visible
+- **THEN** the shimmer skeleton displays a top bar with inline skeleton blocks for the hero metric, a two-column grid with a tall chart skeleton on the left and stacked card + allocation skeletons on the right, and a table skeleton below
+
+#### Scenario: Skeleton top bar is interactive
+- **WHEN** the app is in loading state
+- **THEN** the theme toggle in the skeleton top bar is functional and responds to clicks
 
 ### Requirement: Layout is responsive
-The dashboard SHALL use a sidebar (`240px`) + main content grid on screens ≥900px and collapse to a single-column layout with a top bar on narrower screens.
+The dashboard SHALL use a two-column grid (`1fr 300px`) on viewports ≥ 900px and collapse to a single-column layout on narrower viewports. The top bar delta text SHALL abbreviate at 767px. The top bar wordmark SHALL hide at 599px.
 
 #### Scenario: Layout collapses at 900px
 - **WHEN** the viewport width drops below 900px
-- **THEN** the sidebar becomes a top bar and content stacks vertically
+- **THEN** the two-column dashboard grid collapses to a single column and all sections stack vertically
+
+#### Scenario: Delta text abbreviates at 767px
+- **WHEN** the viewport width drops below 768px
+- **THEN** the top bar delta badge shows only the percentage, not the dollar amount
+
+#### Scenario: Wordmark hides at 599px
+- **WHEN** the viewport width drops below 600px
+- **THEN** the "Portfolio" text in the top bar brand zone is hidden; the ◆ mark remains
 
 ### Requirement: Dashboard layout includes a chart section between cards and table
+The dashboard SHALL render a `PortfolioChart` component as the primary visual in the **left column** of the two-column dashboard grid. It SHALL occupy all available width of its column. On viewports below 900px the chart SHALL render full-width above the right-rail cards.
 
-The dashboard SHALL render a `PortfolioChart` component in a dedicated chart section placed after the `.summary-cards` grid and before the `.holdings-section`. The chart section SHALL have the same horizontal padding as the summary cards and holdings table to maintain visual alignment.
+#### Scenario: Chart renders in left column on desktop
+- **WHEN** portfolio data has loaded and viewport is ≥ 900px
+- **THEN** the portfolio chart is in the left column of the dashboard grid, to the left of the right rail
 
-#### Scenario: Chart section is present on load
-
-- **WHEN** portfolio data has loaded
-- **THEN** the chart section is visible between the summary cards row and the holdings table with consistent horizontal alignment
-
-#### Scenario: Chart section is included in the loading skeleton
-
-- **WHEN** portfolio data has not yet resolved
-- **THEN** the shimmer skeleton includes a chart skeleton block in the correct position between the cards skeleton and the table skeleton
+#### Scenario: Chart renders full-width on mobile
+- **WHEN** the viewport is below 900px
+- **THEN** the portfolio chart renders full-width, stacked above the Total Return card and AllocationExplorer
 
 ### Requirement: Dashboard layout includes an asset allocation chart section
-The dashboard SHALL render an `AssetAllocationChart` component in a dedicated card section. It SHALL be placed after the portfolio history chart section and before the holdings table. It SHALL have the same horizontal padding as adjacent sections to maintain visual alignment.
+The `AllocationExplorer` component SHALL be rendered inside the **right rail** of the two-column dashboard grid, below the Total Return card. It SHALL adapt to the 300px rail width. On viewports below 900px it SHALL render full-width below the Total Return card.
 
-#### Scenario: Allocation chart is visible after data loads
-- **WHEN** portfolio data has loaded
-- **THEN** the asset allocation chart card is visible between the history chart and the holdings table
+#### Scenario: AllocationExplorer renders in right rail on desktop
+- **WHEN** portfolio data has loaded and viewport is ≥ 900px
+- **THEN** the AllocationExplorer is in the right column of the dashboard grid, below the Total Return card
 
-#### Scenario: Allocation chart section is included in the loading skeleton
-- **WHEN** portfolio data has not yet resolved
-- **THEN** the shimmer skeleton includes a placeholder block in the correct position for the allocation chart
+#### Scenario: AllocationExplorer renders full-width on mobile
+- **WHEN** the viewport is below 900px
+- **THEN** the AllocationExplorer renders full-width below the Total Return card and above the holdings section
 
 ### Requirement: Asset class color tokens are defined for both themes
 The CSS token system SHALL define four asset class color tokens: `--asset-stock`, `--asset-etf`, `--asset-crypto`, and `--asset-cash`. Each SHALL have a distinct value under both `:root` (light theme) and `[data-theme='dark']` (dark theme).

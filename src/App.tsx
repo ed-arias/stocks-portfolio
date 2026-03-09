@@ -221,13 +221,36 @@ function MoonIcon() {
   )
 }
 
-function Sidebar({ theme, toggleTheme }: { theme: string; toggleTheme: () => void }) {
+function TopBar({ theme, toggleTheme, totalValue, dailyGain, dailyGainPercentage }: {
+  theme: string
+  toggleTheme: () => void
+  totalValue: number | null
+  dailyGain: number | null
+  dailyGainPercentage: number | null
+}) {
+  const fmt = (val: number) =>
+    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val)
+  const isPositive = (dailyGain ?? 0) >= 0
+
   return (
-    <aside className="sidebar">
-      <div className="logotype">
-        Portfolio<span>Equity Tracker</span>
+    <header className="top-bar">
+      <div className="top-bar-brand">
+        <span className="top-bar-logo">◆</span>
+        <span className="top-bar-wordmark">Portfolio</span>
       </div>
-      <div className="sidebar-footer">
+
+      {totalValue !== null && dailyGain !== null && dailyGainPercentage !== null && (
+        <div className="top-bar-hero">
+          <span className="hero-value">{fmt(totalValue)}</span>
+          <span className={`hero-delta ${isPositive ? 'positive' : 'negative'}`}>
+            {isPositive ? '▲' : '▼'}
+            <span className="hero-delta-full">&nbsp;{fmt(Math.abs(dailyGain))} ({dailyGainPercentage.toFixed(2)}%) today</span>
+            <span className="hero-delta-short">&nbsp;{dailyGainPercentage.toFixed(2)}%</span>
+          </span>
+        </div>
+      )}
+
+      <div className="top-bar-controls">
         <button
           className="theme-toggle"
           onClick={toggleTheme}
@@ -236,22 +259,40 @@ function Sidebar({ theme, toggleTheme }: { theme: string; toggleTheme: () => voi
           {theme === 'light' ? <MoonIcon /> : <SunIcon />}
         </button>
       </div>
-    </aside>
+    </header>
   )
 }
 
 function LoadingState({ theme, toggleTheme }: { theme: string; toggleTheme: () => void }) {
   return (
     <div className="loading-shell">
-      <Sidebar theme={theme} toggleTheme={toggleTheme} />
-      <div className="loading-main">
-        <div className="skeleton skeleton-title" />
-        <div className="skeleton-cards">
-          <div className="skeleton skeleton-card" />
-          <div className="skeleton skeleton-card" />
+      <header className="top-bar">
+        <div className="top-bar-brand">
+          <span className="top-bar-logo">◆</span>
+          <span className="top-bar-wordmark">Portfolio</span>
         </div>
-        <div className="skeleton skeleton-chart" />
-        <div className="skeleton skeleton-alloc" />
+        <div className="top-bar-hero">
+          <div className="skeleton" style={{ width: '160px', height: '22px', borderRadius: '8px' }} />
+          <div className="skeleton" style={{ width: '130px', height: '20px', borderRadius: '20px' }} />
+        </div>
+        <div className="top-bar-controls">
+          <button
+            className="theme-toggle"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+          >
+            {theme === 'light' ? <MoonIcon /> : <SunIcon />}
+          </button>
+        </div>
+      </header>
+      <div className="loading-main">
+        <div className="skeleton-dashboard-grid">
+          <div className="skeleton skeleton-chart" />
+          <div className="skeleton-right-rail">
+            <div className="skeleton skeleton-card" />
+            <div className="skeleton skeleton-alloc" />
+          </div>
+        </div>
         <div className="skeleton skeleton-table" />
       </div>
     </div>
@@ -466,79 +507,71 @@ function App() {
     return <LoadingState theme={theme} toggleTheme={toggleTheme} />
   }
 
-  const isPositive = (portfolio?.dailyGain ?? 0) >= 0
   const isReturnPositive = (portfolio?.totalReturn ?? 0) >= 0
 
   return (
     <div className="shell">
-      <Sidebar theme={theme} toggleTheme={toggleTheme} />
+      <TopBar
+        theme={theme}
+        toggleTheme={toggleTheme}
+        totalValue={portfolio?.totalValue ?? null}
+        dailyGain={portfolio?.dailyGain ?? null}
+        dailyGainPercentage={portfolio?.dailyGainPercentage ?? null}
+      />
 
       <main className="main">
-        <div className="page-header">
-          <p className="page-label">Overview</p>
-          <h1 className="page-title">My Portfolio</h1>
-        </div>
-
-        <div className="cards-grid">
-          <div className="card">
-            <p className="card-label">Total Value</p>
-            <p className="card-value">
-              {portfolio ? formatCurrency(portfolio.totalValue) : '—'}
-            </p>
-            <p className={`card-change ${isPositive ? 'positive' : 'negative'}`}>
-              <span>{isPositive ? '▲' : '▼'}</span>
-              <span>
-                {portfolio ? formatCurrency(Math.abs(portfolio.dailyGain)) : '—'}
-                &nbsp;({portfolio?.dailyGainPercentage.toFixed(2)}%) today
-              </span>
-            </p>
+        <div className="dashboard-grid">
+          {/* Left column: chart hero */}
+          <div className="chart-panel">
+            <PortfolioChart />
           </div>
 
-          <div className="card">
-            <p className="card-label">Total Return</p>
-            <p className="card-value">
-              {portfolio ? formatCurrency(portfolio.totalReturn) : '—'}
-            </p>
-            <p className={`card-change ${isReturnPositive ? 'positive' : 'negative'}`}>
-              <span>{isReturnPositive ? '▲' : '▼'}</span>
-              <span>{portfolio?.totalReturnPercentage.toFixed(2)}% all-time</span>
-            </p>
-          </div>
+          {/* Right rail: return card + allocation */}
+          <aside className="right-rail">
+            <div className="card">
+              <p className="card-label">Total Return</p>
+              <p className="card-value">
+                {portfolio ? formatCurrency(portfolio.totalReturn) : '—'}
+              </p>
+              <p className={`card-change ${isReturnPositive ? 'positive' : 'negative'}`}>
+                <span>{isReturnPositive ? '▲' : '▼'}</span>
+                <span>{portfolio?.totalReturnPercentage.toFixed(2)}% all-time</span>
+              </p>
+            </div>
+
+            {portfolio && (
+              <AllocationExplorer
+                views={[
+                  {
+                    key:     'byAssetClass',
+                    label:   'Asset Class',
+                    title:   'Asset Allocation',
+                    data:    portfolio.allocations.byAssetClass,
+                    colorFn: (item) => {
+                      const idx = portfolio.allocations.byAssetClass.findIndex((a) => a.key === item.key)
+                      return holdingColor(idx, portfolio.allocations.byAssetClass.length)
+                    },
+                    labelFn: (item) => ASSET_CLASS_LABELS[item.key] ?? item.key,
+                  },
+                  {
+                    key:     'byHolding',
+                    label:   'Holdings',
+                    title:   'Holdings Weight',
+                    data:    portfolio.allocations.byHolding,
+                    colorFn: (item) => {
+                      const idx = portfolio.allocations.byHolding.findIndex((h) => h.key === item.key)
+                      return holdingColor(idx, portfolio.allocations.byHolding.length)
+                    },
+                    labelFn: (item) => {
+                      const pos = portfolio.positions.find((p) => p.ticker === item.key)
+                      return pos ? `${item.key} · ${pos.companyName}` : item.key
+                    },
+                  },
+                ]}
+              />
+            )}
+          </aside>
         </div>
-
-        <PortfolioChart />
-
-        {portfolio && (
-          <AllocationExplorer
-            views={[
-              {
-                key:     'byAssetClass',
-                label:   'Asset Class',
-                title:   'Asset Allocation',
-                data:    portfolio.allocations.byAssetClass,
-                colorFn: (item) => {
-                  const idx = portfolio.allocations.byAssetClass.findIndex((a) => a.key === item.key)
-                  return holdingColor(idx, portfolio.allocations.byAssetClass.length)
-                },
-                labelFn: (item) => ASSET_CLASS_LABELS[item.key] ?? item.key,
-              },
-              {
-                key:     'byHolding',
-                label:   'Holdings',
-                title:   'Holdings Weight',
-                data:    portfolio.allocations.byHolding,
-                colorFn: (item) => {
-                  const idx = portfolio.allocations.byHolding.findIndex((h) => h.key === item.key)
-                  return holdingColor(idx, portfolio.allocations.byHolding.length)
-                },
-                labelFn: (item) => {
-                  const pos = portfolio.positions.find((p) => p.ticker === item.key)
-                  return pos ? `${item.key} · ${pos.companyName}` : item.key
-                },
-              },
-            ]}
-          />
-        )}
 
         {/* Holdings Section */}
         <section className="holdings-section">
@@ -741,10 +774,11 @@ function App() {
                                       return (
                                         <span className="fv-cell">
                                           <span>{formatCurrency(pos.fairValue.price)}</span>
-                                          <span className={upside >= 0 ? 'positive' : 'negative'}>
-                                            {upside >= 0 ? '+' : ''}{upside.toFixed(1)}%
+                                          <span className={`fv-badge ${cls}`}>
+                                            {label}
+                                            <span className="fv-dot">·</span>
+                                            <span className="fv-pct">{upside >= 0 ? '+' : ''}{upside.toFixed(1)}%</span>
                                           </span>
-                                          <span className={`fv-badge ${cls}`}>{label}</span>
                                         </span>
                                       )
                                     })() : '—'}
