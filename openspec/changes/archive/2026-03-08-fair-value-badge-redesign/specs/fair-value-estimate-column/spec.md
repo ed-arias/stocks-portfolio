@@ -1,13 +1,4 @@
-# fair-value-estimate-column Specification
-
-## Requirements
-
-### Requirement: FairValueEstimate type is exported from types
-A `FairValueEstimate` interface SHALL be exported from `src/types/index.ts` with two fields: `price: number` (the estimated fair value price per share in USD) and `source: string` (the name of the data provider, e.g., "Morningstar").
-
-#### Scenario: FairValueEstimate is importable from types
-- **WHEN** a component imports `FairValueEstimate` from `src/types/index.ts`
-- **THEN** both `price` and `source` fields are present and typed correctly
+## MODIFIED Requirements
 
 ### Requirement: Fair Value column is available in the holdings table
 The holdings table SHALL include an optional "Fair Value" column that displays the estimated fair value price and a valuation badge for each position. The cell SHALL use a **vertical stack layout** (price on top, badge below, right-aligned) mirroring the P&L and Daily Change column layout. The valuation badge SHALL embed the upside/downside percentage as a secondary data point inside the pill using the `[Label · ±%]` format. The column SHALL be toggleable via the existing column picker and visible by default.
@@ -23,17 +14,6 @@ The holdings table SHALL include an optional "Fair Value" column that displays t
 #### Scenario: Cell shows em dash for unrated positions
 - **WHEN** a position has no `fairValue` (undefined)
 - **THEN** the cell renders an em dash (—)
-
-### Requirement: Upside percentage is derived from fair value price and current price
-The upside/downside percentage SHALL be computed by the frontend as `((fairValue.price − currentPrice) / currentPrice) × 100`. A positive value means the stock is trading below fair value (upside); a negative value means it is trading above fair value (downside).
-
-#### Scenario: Positive upside when current price is below fair value
-- **WHEN** `fairValue.price` is greater than `currentPrice`
-- **THEN** the displayed upside percentage is positive and prefixed with "+"
-
-#### Scenario: Negative downside when current price is above fair value
-- **WHEN** `fairValue.price` is less than `currentPrice`
-- **THEN** the displayed percentage is negative
 
 ### Requirement: Valuation badges use three-tier color scheme
 Valuation badges SHALL use a three-tier scheme based on upside percentage thresholds: Undervalued (upside > +10%) uses green, Fair (−10% to +10%) uses neutral, Overvalued (upside < −10%) uses red. Color tokens SHALL work in both light and dark themes. Badges SHALL use `font-ui` (Figtree) for the tier label and `font-data` (JetBrains Mono) for the percentage. Badges SHALL NOT use border or arrow characters. Badge shape SHALL use `border-radius: 100px` consistent with `.rating-badge`.
@@ -53,14 +33,3 @@ Valuation badges SHALL use a three-tier scheme based on upside percentage thresh
 #### Scenario: Badge embeds upside percentage as secondary element
 - **WHEN** a valuation badge renders
 - **THEN** the badge contains the tier label, a muted separator dot, and the upside percentage formatted as `+X.X%` or `−X.X%` in a de-emphasised style
-
-### Requirement: Fair Value column is sortable by upside percentage
-The Fair Value column SHALL be sortable using the existing tri-state sort system. Ascending sort SHALL order positions from most undervalued (highest upside %) to most overvalued (lowest upside %). Positions with no fair value SHALL sort last in both directions.
-
-#### Scenario: Ascending sort orders most undervalued first
-- **WHEN** the user sorts the Fair Value column ascending
-- **THEN** positions are ordered from highest upside % to lowest (most undervalued first)
-
-#### Scenario: Unrated positions are always last regardless of sort direction
-- **WHEN** sorting ascending or descending on Fair Value
-- **THEN** positions with `fairValue === undefined` appear after all rated positions
