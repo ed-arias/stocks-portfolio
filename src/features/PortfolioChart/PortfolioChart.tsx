@@ -47,7 +47,7 @@ function formatYTick(val: number): string {
   return `$${(val / 1_000).toFixed(0)}k`
 }
 
-export function PortfolioChart() {
+export function PortfolioChart({ noCard = false }: { noCard?: boolean }) {
   const { theme } = useTheme()
   const [activePeriod, setActivePeriod] = useState<Period>('1M')
   const [data, setData] = useState<PortfolioHistoryPoint[]>([])
@@ -67,8 +67,8 @@ export function PortfolioChart() {
   // theme is read so re-render fires when it changes, refreshing the CSS vars above
   void theme
 
-  return (
-    <div className="chart-section">
+  const content = (
+    <>
       <div className="chart-header">
         <h2 className="chart-title">Portfolio Value</h2>
         <div className="period-selector" role="group" aria-label="Select time period">
@@ -85,7 +85,7 @@ export function PortfolioChart() {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={280}>
+      <ResponsiveContainer width="100%" height={200}>
         <AreaChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
@@ -106,6 +106,7 @@ export function PortfolioChart() {
           />
 
           <YAxis
+            domain={['auto', 'auto']}
             tickFormatter={formatYTick}
             tick={{ fontSize: 11, fill: mutedColor, fontFamily: 'var(--font-ui)' }}
             axisLine={false}
@@ -126,6 +127,9 @@ export function PortfolioChart() {
           />
         </AreaChart>
       </ResponsiveContainer>
-    </div>
+    </>
   )
+
+  if (noCard) return <div className="chart-inner">{content}</div>
+  return <div className="chart-section">{content}</div>
 }

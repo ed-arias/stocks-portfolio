@@ -2,6 +2,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { useTheme } from './context/ThemeContext'
 import AllocationExplorer from './features/AllocationExplorer/AllocationExplorer'
+import { CostBasisChart } from './features/AllocationExplorer/CostBasisChart'
 import { PortfolioChart } from './features/PortfolioChart/PortfolioChart'
 import { StockService } from './services/StockService'
 import type { ClosedPosition, PortfolioSummary, StockPosition, Transaction } from './types'
@@ -530,7 +531,9 @@ function App() {
       />
 
       <main className="main">
-        <PortfolioChart />
+        <div className="overview-card">
+        <PortfolioChart noCard />
+        <div className="overview-rule" />
 
         {portfolio && (
           <AllocationExplorer
@@ -560,9 +563,27 @@ function App() {
                   return pos ? `${item.key} · ${pos.companyName}` : item.key
                 },
               },
+              {
+                key:        'costVsMarket',
+                label:      'Cost vs Market',
+                title:      'Cost Basis vs Market Value',
+                data:       [],
+                colorFn:    () => '',
+                labelFn:    () => '',
+                customBody: (
+                  <CostBasisChart
+                    data={portfolio.allocations.costVsMarket}
+                    colorFn={(key) => {
+                      const idx = portfolio.allocations.costVsMarket.findIndex((d) => d.key === key)
+                      return holdingColor(idx, portfolio.allocations.costVsMarket.length)
+                    }}
+                  />
+                ),
+              },
             ]}
           />
         )}
+        </div>
 
         {/* Holdings Section */}
         <section className="holdings-section">

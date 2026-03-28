@@ -1,19 +1,14 @@
-/* ─── Allocation Explorer Card ──────────────────────────────── */
-.alloc-section {
-  background:    var(--surface);
-  border:        1px solid var(--border);
-  border-radius: 16px;
-  padding:       1.5rem 1.5rem 1rem;
-  box-shadow:    var(--shadow-sm);
-  animation:     fadeUp var(--anim-duration) var(--anim-ease) calc(var(--anim-stagger) * 3) both;
+/* ─── Allocation Zone (embedded inside overview-card) ───────── */
+.alloc-zone {
+  padding: 1.25rem 1.5rem 1.5rem;
 }
 
-/* ─── Card Header ───────────────────────────────────────────── */
+/* ─── Card Header (shared pattern with chart-header) ────────── */
 .alloc-header {
   display:         flex;
   align-items:     center;
   justify-content: space-between;
-  margin-bottom:   1.25rem;
+  margin-bottom:   1rem;
   gap:             1rem;
   flex-wrap:       wrap;
 }
@@ -46,6 +41,7 @@
   cursor:         pointer;
   transition:     background 0.15s, color 0.15s;
   letter-spacing: 0.01em;
+  white-space:    nowrap;
 }
 
 .dim-btn:hover:not(.active) {
@@ -56,4 +52,74 @@
 .dim-btn.active {
   background: var(--accent);
   color:      #fff;
+}
+
+/* ─── Body area ─────────────────────────────────────────────── */
+.alloc-body {
+  /* no fixed height — grows naturally, vertical shift is fine */
+}
+
+/* ─── Horizontal Bars ───────────────────────────────────────── */
+.alloc-bars {
+  display:        flex;
+  flex-direction: column;
+  gap:            0.7rem;
+}
+
+.alloc-bar-row {
+  display:     flex;
+  align-items: center;
+  gap:         0.65rem;
+}
+
+.alloc-bar-dot {
+  width:        8px;
+  height:       8px;
+  border-radius: 50%;
+  flex-shrink:  0;
+}
+
+.alloc-bar-label {
+  font-family: var(--font-ui);
+  font-size:   0.82rem;
+  color:       var(--text-secondary);
+  flex:        1;
+  min-width:   0;
+  white-space: nowrap;
+  overflow:    hidden;
+  text-overflow: ellipsis;
+}
+
+.alloc-bar-track {
+  flex:          2;
+  height:        6px;
+  background:    var(--bg-subtle);
+  border-radius: 3px;
+  overflow:      hidden;
+  min-width:     60px;
+}
+
+.alloc-bar-fill {
+  height:        100%;
+  border-radius: 3px;
+  transition:    width 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.alloc-bar-pct {
+  font-family:         var(--font-data);
+  font-size:           0.82rem;
+  font-weight:         600;
+  color:               var(--text-primary);
+  min-width:           42px;
+  text-align:          right;
+  font-variant-numeric: tabular-nums;
+}
+
+.alloc-bar-val {
+  font-family:         var(--font-data);
+  font-size:           0.72rem;
+  color:               var(--text-muted);
+  min-width:           76px;
+  text-align:          right;
+  font-variant-numeric: tabular-nums;
 }

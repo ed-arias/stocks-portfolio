@@ -1,4 +1,4 @@
-import type { AllocationBreakdown, AnalystRating, ClosedPosition, FairValueEstimate, Period, PortfolioHistoryPoint, PortfolioSummary, StockPosition, Transaction } from '../types';
+import type { AllocationBreakdown, AnalystRating, ClosedPosition, CostVsMarketBreakdown, FairValueEstimate, Period, PortfolioHistoryPoint, PortfolioSummary, StockPosition, Transaction } from '../types';
 
 // ─── History helpers (run once at module load, not per-call) ──────────────────
 
@@ -250,6 +250,34 @@ const BY_ASSET_CLASS: AllocationBreakdown[] = [
   { key: 'crypto', value:  2919.92, percentage: 10.47 },
 ];
 
+// Cost basis = shares × avgCost per position, aggregated by asset class
+const COST_VS_MARKET: CostVsMarketBreakdown[] = [
+  {
+    key: 'stock', label: 'Stocks',
+    // AAPL(10×150) + TSLA(5×200) + NVDA(15×450) + MSFT(8×310)
+    costBasis:   11730.00,
+    marketValue: 16971.53,
+    gain:         5241.53,
+    gainPct:        44.68,
+  },
+  {
+    key: 'etf', label: 'ETFs',
+    // VOO(20×380)
+    costBasis:    7600.00,
+    marketValue:  8000.00,
+    gain:          400.00,
+    gainPct:         5.26,
+  },
+  {
+    key: 'crypto', label: 'Crypto',
+    // BTC(0.05×50000)
+    costBasis:    2500.00,
+    marketValue:  2919.92,
+    gain:          419.92,
+    gainPct:        16.80,
+  },
+];
+
 const BY_HOLDING: AllocationBreakdown[] = [
   { key: 'AAPL', value:  1859.20, percentage:  6.67 },
   { key: 'TSLA', value:   987.90, percentage:  3.54 },
@@ -267,8 +295,9 @@ const MOCK_SUMMARY: PortfolioSummary = {
   totalReturnPercentage: 23.14,
   positions: MOCK_POSITIONS,
   allocations: {
-    byAssetClass: BY_ASSET_CLASS,
-    byHolding:    BY_HOLDING,
+    byAssetClass:  BY_ASSET_CLASS,
+    byHolding:     BY_HOLDING,
+    costVsMarket:  COST_VS_MARKET,
   },
 };
 

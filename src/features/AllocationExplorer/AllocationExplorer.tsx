@@ -1,32 +1,43 @@
-import { useState } from 'react'
-import AllocationChart from '../AllocationChart/AllocationChart'
+import { type ReactNode, useEffect, useState } from 'react'
 import type { AllocationBreakdown } from '../../types'
 import './AllocationExplorer.css'
 
 export interface AllocationDimension {
-  key:     string
-  label:   string
-  title:   string
-  data:    AllocationBreakdown[]
-  colorFn: (item: AllocationBreakdown) => string
-  labelFn: (item: AllocationBreakdown) => string
+  key:         string
+  label:       string
+  title:       string
+  data:        AllocationBreakdown[]
+  colorFn:     (item: AllocationBreakdown) => string
+  labelFn:     (item: AllocationBreakdown) => string
+  customBody?: ReactNode
 }
 
 interface Props {
   views: AllocationDimension[]
 }
 
+const fmt = (v: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v)
+
 export default function AllocationExplorer({ views }: Props) {
   const [activeKey, setActiveKey] = useState(views[0].key)
+  const [animated, setAnimated] = useState(false)
 
-  const active = views.find((v) => v.key === activeKey) ?? views[0]
+  const active = views.find(v => v.key === activeKey) ?? views[0]
+
+  // Replay bar animation on mount and on view switch
+  useEffect(() => {
+    setAnimated(false)
+    const id = requestAnimationFrame(() => requestAnimationFrame(() => setAnimated(true)))
+    return () => cancelAnimationFrame(id)
+  }, [activeKey])
 
   return (
-    <div className="alloc-section">
+    <div className="alloc-zone">
       <div className="alloc-header">
-        <h2 className="alloc-title">{active.title}</h2>
+        <h3 className="alloc-title">{active.title}</h3>
         <div className="dim-selector" role="group" aria-label="Select allocation view">
-          {views.map((v) => (
+          {views.map(v => (
             <button
               key={v.key}
               className={`dim-btn${v.key === activeKey ? ' active' : ''}`}
@@ -39,15 +50,38 @@ export default function AllocationExplorer({ views }: Props) {
         </div>
       </div>
 
-      {/* key forces remount → replays donut entry animation on dimension switch */}
-      <AllocationChart
-        key={activeKey}
-        standalone={false}
-        data={active.data}
-        title={active.title}
-        colorFn={active.colorFn}
-        labelFn={active.labelFn}
-      />
+      <div className="alloc-body">
+        {active.customBody ?? (
+          <div className="alloc-bars">
+            {active.data.map((item, i) => {
+              const color = active.colorFn(item)
+              const label = active.labelFn(item)
+              return (
+                <div
+                  key={item.key}
+                  className="alloc-bar-row"
+                  style={{ '--bar-delay': `${i * 60}ms` } as React.CSSProperties}
+                >
+                  <span className="alloc-bar-dot" style={{ background: color }} />
+                  <span className="alloc-bar-label">{label}</span>
+                  <div className="alloc-bar-track">
+                    <div
+                      className="alloc-bar-fill"
+                      style={{
+                        width: animated ? `${item.percentage}%` : '0%',
+                        background: color,
+                        transitionDelay: animated ? `${i * 60}ms` : '0ms',
+                      }}
+                    />
+                  </div>
+                  <span className="alloc-bar-pct">{item.percentage.toFixed(1)}%</span>
+                  <span className="alloc-bar-val">{fmt(item.value)}</span>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

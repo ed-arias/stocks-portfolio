@@ -29,6 +29,15 @@ export interface AllocationBreakdown {
   percentage: number; // Portfolio weight (0–100)
 }
 
+export interface CostVsMarketBreakdown {
+  key:         string;  // Asset class key (e.g., 'stock', 'etf')
+  label:       string;  // Display label (e.g., 'Stocks')
+  costBasis:   number;  // Total cost basis in USD (shares × avgCost)
+  marketValue: number;  // Current market value in USD
+  gain:        number;  // marketValue − costBasis
+  gainPct:     number;  // gain / costBasis × 100
+}
+
 export interface PortfolioHistoryPoint {
   date: string;  // ISO 8601 date: YYYY-MM-DD
   value: number; // Portfolio total value in USD
@@ -81,7 +90,8 @@ export interface PortfolioSummary {
   totalReturnPercentage: number;
   positions: StockPosition[];
   allocations: {
-    byAssetClass: AllocationBreakdown[];
-    byHolding: AllocationBreakdown[];
+    byAssetClass:  AllocationBreakdown[];
+    byHolding:     AllocationBreakdown[];
+    costVsMarket:  CostVsMarketBreakdown[];
   };
 }
